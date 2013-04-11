@@ -8,8 +8,10 @@ class Projectile(pygame.sprite.Sprite):
 	def __init__(self, xv, yv, timezero):
 		pygame.sprite.Sprite.__init__(self)
 		self.image, self.rect = main.load_image('tank.png',-1)
-		self.xv = xv
-		self.yv = yv
-	def move(self):
-		self.rect.center[0] += self.xv
-		self.rect.center[1] += self.yv + main.GRAVITY*(TIME-self.timezero)
+		self.xv = int(xv)
+		self.yv = int(yv)
+		self.timezero = timezero
+	def domove(self):
+		dx = self.xv
+		dy = self.yv + main.GRAVITY*(pygame.time.get_ticks()-self.timezero)
+		self.rect.move(dx, dy)

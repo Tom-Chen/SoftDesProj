@@ -32,6 +32,7 @@ GROUND = (209,155,96)
 global GRAVITY
 GRAVITY = -5
 
+
 class TankMain():
   #Initializes game
   def __init__(self, width=800,height=600):
@@ -53,13 +54,17 @@ class TankMain():
       for event in pygame.event.get():
         if event.type == pygame.QUIT: 
           sys.exit()
+      self.projectile.domove()
       self.tank_sprites.draw(self.screen)
+      self.projectile_sprites.draw(self.screen)
       pygame.display.flip()
       
   def LoadSprites(self):
     #Handles sprites
     self.tank = Tank.Tank()
+    self.projectile = Projectile.Projectile(0, 1, pygame.time.get_ticks())
     self.tank_sprites = pygame.sprite.RenderPlain((self.tank))
+    self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
         
 
 #Starts game if run from command line
