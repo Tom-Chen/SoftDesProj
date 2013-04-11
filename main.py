@@ -3,15 +3,45 @@ import sys
 import pygame
 from pygame.locals import *
 
+if not pygame.font: print 'Warning, fonts disabled'
+if not pygame.mixer: print 'Warning, sound disabled'
+
+def load_image(name, colorkey=None):
+    try:
+        image = pygame.image.load(name)
+    except pygame.error, message:
+        print 'Cannot load image:', name
+        raise SystemExit, message
+    image = image.convert()
+    if colorkey is not None:
+        if colorkey is -1:
+            colorkey = image.get_at((0,0))
+        image.set_colorkey(colorkey, RLEACCEL)
+    return image, image.get_rect()
+
+global RED
+RED = (255,0,0)
+global BLUE
+BLUE = (0,0,255)
+global SKY
+SKY = (105,140,255)
+global GROUND
+GROUND = (209,155,96)
+
 class TankMain():
   #Initializes game
-    
   def __init__(self, width=800,height=600):
     pygame.init()
     self.width = width
     self.height = height
     self.screen = pygame.display.set_mode((self.width, self.height))
-    pygame.display.set_caption('Tank! Game!')
+    self.screen.fill(SKY, rect=None, special_flags=0)
+    pygame.display.set_caption('Tank!')
+    ground = pygame.Rect(0,540,width,60)
+    mountain = pygame.Rect(300,300,200,500)
+    self.screen.fill(GROUND, rect=ground, special_flags=0)
+    self.screen.fill(GROUND, rect=mountain, special_flags=0)
+    self.LoadSprites()
         
   def MainLoop(self):
     #Primary loop/event queue
@@ -19,14 +49,26 @@ class TankMain():
       for event in pygame.event.get():
         if event.type == pygame.QUIT: 
           sys.exit()
-      pygame.display.update()
+      self.tank_sprites.draw(self.screen)
+      pygame.display.flip()
+      
+  def LoadSprites(self):
+    #Handles sprites
+    self.tank = Tank()
+    self.tank_sprites = pygame.sprite.RenderPlain((self.tank))
+      
+class Tank(pygame.sprite.Sprite):
+  #Defines a tank
+  def __init__(self,left=103,top=97):
+    pygame.sprite.Sprite.__init__(self) 
+    self.image, self.rect = load_image('tank.png',-1)
+    self.health = 1000
+    self.angle = 90
+    self.power = 100
+    self.color = None
+    
 
 #Starts game if run from command line
 if __name__ == "__main__":
   MainWindow = TankMain()
   MainWindow.MainLoop()
-  
-# class Tank():
-  
-# class Terrain():
-  
