@@ -42,6 +42,8 @@ class TankMain():
       self.projectile.domove()
       self.projectile_sprites.draw(self.screen)
       pygame.display.flip()
+
+      pygame.display.flip()
       
   def LoadSprites(self):
     #Handles sprites

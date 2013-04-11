@@ -18,3 +18,4 @@ class Tank(pygame.sprite.Sprite):
     self.health = 1000
     self.angle = 90
     self.power = 100
+    self.color = None
