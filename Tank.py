@@ -7,9 +7,14 @@ import main
 
 class Tank(pygame.sprite.Sprite):
   #Defines a tank
-  def __init__(self,left=103,top=97):
+  def __init__(self,side):
     pygame.sprite.Sprite.__init__(self) 
-    self.image, self.rect = main.load_image('tank.png',-1)
+    if(side == 0):
+      self.image = pygame.image.load('bluetank.png')
+      self.rect = (100,100,550,50)
+    if(side == 1):
+      self.image = pygame.image.load('redtank.png')
+      self.rect = (500,100,550,50)
     self.health = 1000
     self.angle = 90
     self.power = 100

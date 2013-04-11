@@ -8,19 +8,6 @@ import Projectile
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
 
-def load_image(name, colorkey=None):
-    try:
-        image = pygame.image.load(name)
-    except pygame.error, message:
-        print 'Cannot load image:', name
-        raise SystemExit, message
-    image = image.convert()
-    if colorkey is not None:
-        if colorkey is -1:
-            colorkey = image.get_at((0,0))
-        image.set_colorkey(colorkey, RLEACCEL)
-    return image, image.get_rect()
-
 global RED
 RED = (255,0,0)
 global BLUE
@@ -41,20 +28,24 @@ class TankMain():
     self.screen = pygame.display.set_mode((self.width, self.height))
     self.screen.fill(SKY, rect=None, special_flags=0)
     pygame.display.set_caption('Tank!')
-    ground = pygame.Rect(0,540,width,60)
-    mountain = pygame.Rect(300,300,200,500)
-    self.screen.fill(GROUND, rect=ground, special_flags=0)
-    self.screen.fill(GROUND, rect=mountain, special_flags=0)
-    self.tank = Tank()
-        
+    self.LoadSprites()
+    
   def MainLoop(self):
     #Primary loop/event queue
     while 1:
       for event in pygame.event.get():
         if event.type == pygame.QUIT: 
           sys.exit()
-      self.screen.blit(self.tank,(pygame.mouse.get_pos()[0],100))
+      self.redtank_sprite.draw(self.screen)
+      self.bluetank_sprite.draw(self.screen)
       pygame.display.flip()
+      
+  def LoadSprites(self):
+    #Handles sprites
+    self.bluetank = Tank.Tank(side=0)
+    self.redtank = Tank.Tank(side=1)
+    self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
+    self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
 
 #Starts game if run from command line
 if __name__ == "__main__":
