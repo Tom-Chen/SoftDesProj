@@ -2,6 +2,8 @@ import os
 import sys
 import pygame
 from pygame.locals import *
+import Tank
+import Projectile
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
@@ -27,6 +29,8 @@ global SKY
 SKY = (105,140,255)
 global GROUND
 GROUND = (209,155,96)
+global GRAVITY
+GRAVITY = -5
 
 class TankMain():
   #Initializes game
@@ -54,19 +58,9 @@ class TankMain():
       
   def LoadSprites(self):
     #Handles sprites
-    self.tank = Tank()
+    self.tank = Tank.Tank()
     self.tank_sprites = pygame.sprite.RenderPlain((self.tank))
-      
-class Tank(pygame.sprite.Sprite):
-  #Defines a tank
-  def __init__(self,left=103,top=97):
-    pygame.sprite.Sprite.__init__(self) 
-    self.image, self.rect = load_image('tank.png',-1)
-    self.health = 1000
-    self.angle = 90
-    self.power = 100
-    self.color = None
-    
+        
 
 #Starts game if run from command line
 if __name__ == "__main__":
