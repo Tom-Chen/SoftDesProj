@@ -45,7 +45,7 @@ class TankMain():
     mountain = pygame.Rect(300,300,200,500)
     self.screen.fill(GROUND, rect=ground, special_flags=0)
     self.screen.fill(GROUND, rect=mountain, special_flags=0)
-    self.LoadSprites()
+    self.tank = Tank()
         
   def MainLoop(self):
     #Primary loop/event queue
@@ -53,14 +53,8 @@ class TankMain():
       for event in pygame.event.get():
         if event.type == pygame.QUIT: 
           sys.exit()
-      self.tank_sprites.draw(self.screen)
+      self.screen.blit(self.tank,(pygame.mouse.get_pos()[0],100))
       pygame.display.flip()
-      
-  def LoadSprites(self):
-    #Handles sprites
-    self.tank = Tank.Tank()
-    self.tank_sprites = pygame.sprite.RenderPlain((self.tank))
-        
 
 #Starts game if run from command line
 if __name__ == "__main__":
