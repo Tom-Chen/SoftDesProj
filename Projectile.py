@@ -7,7 +7,7 @@ from pygame.locals import *
 class Projectile(pygame.sprite.Sprite):
 	def __init__(self, xv, yv, timezero):
 		pygame.sprite.Sprite.__init__(self)
-		self.image, self.rect = main.load_image('tank.png',-1)
+		self.image = pygame.image.load('tank.png')
 		self.xv = int(xv)
 		self.yv = int(yv)
 		self.timezero = timezero
