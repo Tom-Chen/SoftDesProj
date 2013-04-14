@@ -11,7 +11,7 @@ class Tank(pygame.sprite.Sprite):
     pygame.sprite.Sprite.__init__(self)
     if(side == 0):
       self.image = pygame.image.load('bluetank.png')
-      self.rect = (100,100,550,50)
+      self.rect = pygame.Rect(100,100,550,50)
       self.color = "blue"
     if(side == 1):
       self.image = pygame.image.load('redtank.png')
