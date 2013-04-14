@@ -5,11 +5,11 @@ import main
 from pygame.locals import *
 
 class Projectile(pygame.sprite.Sprite):
-	def __init__(self, xv, yv, timezero):
+	def __init__(self,x,y, xv, yv, timezero):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = pygame.image.load('shot.png')
-		#self.rect = self.image.get_rect()
-		self.rect = pygame.Rect(100,100,550,50)
+		self.rect = self.image.get_rect()
+		self.rect.center = (x,y)
 		self.xv = int(xv)
 		self.yv = int(yv)
 		self.timezero = timezero

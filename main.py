@@ -34,17 +34,17 @@ class TankMain():
 	def MainLoop(self):
 		#Primary loop/event queue
 		current = pygame.time.get_ticks()
-		while 1:			
+		while 1:            
 			if(pygame.time.get_ticks()-current>100):
-					for event in pygame.event.get():
-						if event.type == pygame.QUIT: 
-							sys.exit()
-					self.redtank_sprite.draw(self.screen)
-					self.bluetank_sprite.draw(self.screen)
-					self.projectile.domove()
-					self.projectile_sprites.draw(self.screen)
-					pygame.display.flip()
-					current = pygame.time.get_ticks()
+				for event in pygame.event.get():
+					if event.type == pygame.QUIT: 
+						sys.exit()
+				self.redtank_sprite.draw(self.screen)
+				self.bluetank_sprite.draw(self.screen)
+				self.projectile.domove()
+				self.projectile_sprites.draw(self.screen)
+				pygame.display.flip()
+				current = pygame.time.get_ticks()
 			
 	def LoadSprites(self):
 		#Handles sprites
@@ -52,7 +52,7 @@ class TankMain():
 		self.redtank = Tank.Tank(side=1)
 		self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
 		self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
-		self.projectile = Projectile.Projectile(2, -3, pygame.time.get_ticks())
+		self.projectile = Projectile.Projectile(100, 100, 4, -6, pygame.time.get_ticks())
 		self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
 
 #Starts game if run from command line
