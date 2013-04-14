@@ -18,7 +18,8 @@ global GROUND
 GROUND = (209,155,96)
 global GRAVITY
 GRAVITY = -5
-
+global TURN
+TURN = 0
 
 class TankMain():
   #Initializes game
@@ -28,15 +29,28 @@ class TankMain():
     self.height = height
     self.screen = pygame.display.set_mode((self.width, self.height))
     self.screen.fill(SKY, rect=None, special_flags=0)
+    self.background = pygame.Surface((self.width,self.height))
+    self.background.fill(SKY ,rect=None, special_flags=0)
     pygame.display.set_caption('Tank!')
     self.LoadSprites()
     
   def MainLoop(self):
     #Primary loop/event queue
     while 1:
+      self.redtank_sprite.clear(self.screen,self.background)
+      self.bluetank_sprite.clear(self.screen,self.background)
       for event in pygame.event.get():
         if event.type == pygame.QUIT: 
           sys.exit()
+        elif event.type == KEYDOWN:
+          if ((event.key == K_RIGHT)
+          or (event.key == K_LEFT)
+          or (event.key == K_UP)
+          or (event.key == K_DOWN)):
+            if TURN == 0:
+              self.bluetank.move(event.key)
+            elif TURN == 1:
+              self.redtank.move(event.key)
       self.redtank_sprite.draw(self.screen)
       self.bluetank_sprite.draw(self.screen)
       self.projectile.domove()
