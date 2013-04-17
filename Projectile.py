@@ -3,15 +3,18 @@ import sys
 import pygame
 import main
 from pygame.locals import *
+import math
 
 class Projectile(pygame.sprite.Sprite):
-  def __init__(self,x,y, xv, yv, timezero):
+  def __init__(self,x,y, angle, power, timezero):
     pygame.sprite.Sprite.__init__(self)
     self.image = pygame.image.load('shot.png')
     self.rect = self.image.get_rect()
     self.rect.center = (x,y)
-    self.xv = int(xv)
-    self.yv = int(yv)
+    self.angle = math.radians(angle)
+    self.xv = int(math.cos(self.angle)*power)
+    self.yv = int(math.sin(self.angle)*power)
+    print(self.xv,self.yv)
     self.timezero = timezero
   def domove(self):
     dx = self.xv
