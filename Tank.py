@@ -11,11 +11,13 @@ class Tank(pygame.sprite.Sprite):
     pygame.sprite.Sprite.__init__(self)
     if(side == 0):
       self.image = pygame.image.load('bluetank.png')
-      self.rect = pygame.Rect(100,100,550,50)
+      self.rect = self.image.get_rect()
+      self.rect.center = (100,100)
       self.color = "blue"
     if(side == 1):
       self.image = pygame.image.load('redtank.png')
-      self.rect = pygame.Rect(500,100,550,50)
+      self.rect = self.image.get_rect()
+      self.rect.center = (500,100)
       self.color = "red"
     self.health = 1000
     self.angle = 90
@@ -31,4 +33,5 @@ class Tank(pygame.sprite.Sprite):
     elif (key == K_LEFT):
         xMove = -self.x_dist
         print("Left")
-    self.rect.move_ip(xMove,0);
+    self.rect.move_ip(xMove,0)
+    self.rect.move(xMove,0)

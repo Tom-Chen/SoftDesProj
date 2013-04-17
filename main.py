@@ -20,6 +20,8 @@ global GRAVITY
 GRAVITY = 1
 global TURN
 TURN = 0
+global FPS
+FPS = 60
 
 class TankMain():
   #Initializes game
@@ -34,12 +36,12 @@ class TankMain():
     pygame.display.set_caption('Tank!')
     self.LoadSprites()
     self.side = 1
-    
+  
   def MainLoop(self):
-    #Primary loop/event queue
+  #Primary loop/event queue
     current = pygame.time.get_ticks()
-    while 1:            
-      if(pygame.time.get_ticks()-current>100):
+    while 1:      
+      if(pygame.time.get_ticks()-current>FPS/10):
         for event in pygame.event.get():
           if event.type == pygame.QUIT: 
             sys.exit()
@@ -53,8 +55,12 @@ class TankMain():
               #switch sides, eventually control firing
               if (self.side == 0):
                 self.side = 1
+                bluetankpos = self.bluetank.rect.center
+                self.reloadProjectiles(bluetankpos[0], bluetankpos[1],4,-6)
               elif (self.side == 1):
                 self.side = 0
+                redtankpos = self.redtank.rect.center
+                self.reloadProjectiles(redtankpos[0], redtankpos[1],-4,-6)
         self.redtank_sprite.clear(self.screen,self.background)
         self.bluetank_sprite.clear(self.screen,self.background)
         self.projectile_sprites.clear(self.screen,self.background)
@@ -64,14 +70,18 @@ class TankMain():
         self.projectile_sprites.draw(self.screen)
         pygame.display.flip()
         current = pygame.time.get_ticks()
-      
+    
   def LoadSprites(self):
-    #Handles sprites
+  #Handles sprites
     self.bluetank = Tank.Tank(side=0)
     self.redtank = Tank.Tank(side=1)
     self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
     self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
     self.projectile = Projectile.Projectile(100, 100, 4, -6, pygame.time.get_ticks())
+    self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
+  
+  def reloadProjectiles(self,x,y,xv,yv):
+    self.projectile = Projectile.Projectile(x,y,xv,yv, pygame.time.get_ticks())
     self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
 
 #Starts game if run from command line
