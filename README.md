@@ -5,24 +5,10 @@ SoftDesProj
 
 To Do:
 
-Determine game world parameters
-
-Learn Pygame
-
-Initalize Window
-
-Render terrain and player
-
-Allow player movement
-
-Determine physics equations
-
-Code/Render player firing
-
-Code on-hit reactions/health
-
-Add turns
-
-Code AI
-
-Add extras
+Smooth movement/angle adjustment
+Player information display
+Fix collision detection
+Add ground
+Add damage
+Fix gravity/physics equations
+Change where shot originates

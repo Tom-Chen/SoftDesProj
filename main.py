@@ -21,7 +21,7 @@ GRAVITY = 1
 global TURN
 TURN = 0
 global FPS
-FPS = 60
+FPS = 17
 
 class TankMain():
 	#Initializes game
