@@ -6,7 +6,7 @@ from pygame.locals import *
 import math
 
 class Projectile(pygame.sprite.Sprite):
-  def __init__(self,x,y, angle, power, timezero):
+  def __init__(self,x,y, angle, power, timezero, color):
     pygame.sprite.Sprite.__init__(self)
     self.image = pygame.image.load('shot.png')
     self.rect = self.image.get_rect()
@@ -14,8 +14,9 @@ class Projectile(pygame.sprite.Sprite):
     self.angle = math.radians(angle)
     self.xv = int(math.cos(self.angle)*power)
     self.yv = int(math.sin(self.angle)*power)
-    print(self.xv,self.yv)
+
     self.timezero = timezero
+    self.color = color
   def domove(self):
     dx = self.xv
     dy = self.yv + main.GRAVITY*(pygame.time.get_ticks()-self.timezero)/main.FPS
