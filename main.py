@@ -22,6 +22,8 @@ global TURN
 TURN = 0
 global FPS
 FPS = 17
+global MAXSPEED
+MAXSPEED = 20
 
 class TankMain():
 	#Initializes game
@@ -46,7 +48,7 @@ class TankMain():
 					if event.type == pygame.QUIT: 
 						sys.exit()
 					elif event.type == KEYDOWN:
-						if ((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)):
+						if ((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
 							if (self.side == 0):
 								self.bluetank.move(event.key)
 							elif (self.side == 1):
@@ -56,12 +58,12 @@ class TankMain():
 							if (self.side == 0):
 								self.side = 1
 								bluetankpos = self.bluetank.rect.center
-								self.reloadProjectiles(bluetankpos[0], bluetankpos[1],self.bluetank.angle,8,'blue')
+								self.reloadProjectiles(bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,'blue')
 
 							elif (self.side == 1):
 								self.side = 0
 								redtankpos = self.redtank.rect.center
-								self.reloadProjectiles(redtankpos[0], redtankpos[1],self.redtank.angle,8, 'red')
+								self.reloadProjectiles(redtankpos[0], redtankpos[1],self.redtank.angle,self.bluetank.power, 'red')
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)

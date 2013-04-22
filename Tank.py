@@ -28,22 +28,32 @@ class Tank(pygame.sprite.Sprite):
 		print(self.rect)
 
 		self.health = 1000
-		self.power = 100
+		self.power = 10
 		self.x_dist = 5
 		
 	def move(self,key):
 		xMove = 0;
 		if (key == K_UP):
-			self.angle += 15
+			if self.color == 'blue':
+				self.angle -=15
+			else:
+				self.angle += 15
 		elif (key == K_DOWN):
-			self.angle -= 15
+			if self.color == 'blue':
+				self.angle +=15
+			else:
+				self.angle -= 15
 		elif (key == K_RIGHT):
 			xMove = self.x_dist
 			print("Right")
 		elif (key == K_LEFT):
 			xMove = -self.x_dist
 			print("Left")
-			
+		if key == K_p:
+			self.power += 1
+			if self.power>main.MAXSPEED:
+				self.power == 0
+			print("power", self.power)
 		if self.color == 'red':
 			if self.angle <= 180:
 				self.angle = 180
