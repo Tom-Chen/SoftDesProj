@@ -8,7 +8,7 @@ import math
 class Projectile(pygame.sprite.Sprite):
   def __init__(self,x,y, angle, power, timezero, color):
     pygame.sprite.Sprite.__init__(self)
-    self.image = pygame.image.load('shot.png')
+    self.image = pygame.image.load('./img/shot.png')
     self.rect = self.image.get_rect()
     self.rect.center = (x,y)
     self.angle = math.radians(angle)
