@@ -21,7 +21,7 @@ GRAVITY = 1
 global TURN
 TURN = 0
 global FPS
-FPS = 17
+FPS = 60
 global MAXSPEED
 MAXSPEED = 20
 
@@ -42,32 +42,59 @@ class TankMain():
 	def MainLoop(self):
 	#Primary loop/event queue
 		current = pygame.time.get_ticks()
-		while 1:      
-			if(pygame.time.get_ticks()-current>FPS/10):
+		while 1:
+			#FPS and gamespeed limiter
+			if(pygame.time.get_ticks()-current>(1000/FPS)):
 				for event in pygame.event.get():
 					if event.type == pygame.QUIT: 
 						sys.exit()
 					elif event.type == KEYDOWN:
+						#Controls movement and power/angle adjustment
 						if ((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
 							if (self.side == 0):
-								self.bluetank.move(event.key)
+								self.bluetank.adjust(event.key)
 							elif (self.side == 1):
-								self.redtank.move(event.key)
+								self.redtank.adjust(event.key)
 						if(event.key == K_SPACE):
-							#switch sides, eventually control firing
+							#Fire projectile and switch turn
 							if (self.side == 0):
 								self.side = 1
 								bluetankpos = self.bluetank.rect.center
 								self.reloadProjectiles(bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,'blue')
-
 							elif (self.side == 1):
 								self.side = 0
 								redtankpos = self.redtank.rect.center
 								self.reloadProjectiles(redtankpos[0], redtankpos[1],self.redtank.angle,self.bluetank.power, 'red')
+						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
-								
+				#Smooth movement, power, and angle handling
+				keys = pygame.key.get_pressed()
+				if keys[K_p]:
+					if (self.side == 0):
+						self.bluetank.adjust(K_p)
+					elif (self.side == 1):
+						self.redtank.adjust(K_p)
+				if keys[K_LEFT] or keys[K_RIGHT]:
+					if (self.side == 0) and keys[K_LEFT]:
+						self.bluetank.adjust(K_LEFT)
+					elif (self.side == 1) and keys[K_LEFT]:
+						self.redtank.adjust(K_LEFT)
+					elif (self.side == 0) and keys[K_RIGHT]:
+						self.bluetank.adjust(K_RIGHT)
+					elif (self.side == 1) and keys[K_RIGHT]:
+						self.redtank.adjust(K_RIGHT)
+				if keys[K_UP] or keys[K_DOWN]:
+					if (self.side == 0) and keys[K_DOWN]:
+						self.bluetank.adjust(K_DOWN)
+					elif (self.side == 1) and keys[K_DOWN]:
+						self.redtank.adjust(K_DOWN)
+					elif (self.side == 0) and keys[K_UP]:
+						self.bluetank.adjust(K_UP)
+					elif (self.side == 1) and keys[K_UP]:
+						self.redtank.adjust(K_UP)
+				#Rendering stuff
 				self.redtank_sprite.clear(self.screen,self.background)
 				self.bluetank_sprite.clear(self.screen,self.background)
 				self.projectile_sprites.clear(self.screen,self.background)
@@ -77,14 +104,14 @@ class TankMain():
 				self.projectile_sprites.draw(self.screen)
 				pygame.display.flip()
 				current = pygame.time.get_ticks()
+				#WIP Collision Detection
 				if self.projectile.rect.colliderect(self.bluetank.rect) and self.projectile.color == 'red':
 					print("Blue Tank Hit")
 					self.projectile.kill()
 				if self.projectile.rect.colliderect(self.redtank.rect) and self.projectile.color == 'blue':
 					print("Red Tank Hit")
 					self.projectile.kill()
-				
-		
+
 	def LoadSprites(self):
 	#Handles sprites
 		self.bluetank = Tank.Tank(side=0)

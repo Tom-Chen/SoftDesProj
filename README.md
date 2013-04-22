@@ -5,8 +5,6 @@ SoftDesProj
 
 To Do:
 
-Smooth movement/angle adjustment
-
 Player information display
 
 Fix collision detection
@@ -15,6 +13,10 @@ Add ground
 
 Add damage
 
-Fix gravity/physics equations
+Polish gravity/physics equations
 
-Change where shot originates
+Make shot originate from barrel
+
+More weapons
+
+AI Player

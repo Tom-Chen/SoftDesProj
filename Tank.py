@@ -29,31 +29,35 @@ class Tank(pygame.sprite.Sprite):
 
 		self.health = 1000
 		self.power = 10
-		self.x_dist = 5
+		self.x_dist = 3
 		
-	def move(self,key):
+	def adjust(self,key):
 		xMove = 0;
+    #Angle Adjustment
 		if (key == K_UP):
 			if self.color == 'blue':
-				self.angle -=15
+				self.angle -= 1
 			else:
-				self.angle += 15
+				self.angle += 1
 		elif (key == K_DOWN):
 			if self.color == 'blue':
-				self.angle +=15
+				self.angle += 1
 			else:
-				self.angle -= 15
+				self.angle -= 1
+    #Movement
 		elif (key == K_RIGHT):
 			xMove = self.x_dist
 			print("Right")
 		elif (key == K_LEFT):
 			xMove = -self.x_dist
 			print("Left")
+    #Change power
 		if key == K_p:
 			self.power += 1
 			if self.power>main.MAXSPEED:
-				self.power == 0
+				self.power = 1
 			print("power", self.power)
+    #Change Angle
 		if self.color == 'red':
 			if self.angle <= 180:
 				self.angle = 180
@@ -64,7 +68,10 @@ class Tank(pygame.sprite.Sprite):
 				self.angle = 270
 			if self.angle >= 360:
 				self.angle = 360
-		newImage = './img/'+self.color+'tank'+str(self.angle)+'.png'
+    #Adjust image based on angle
+		approxAngle = round(self.angle / 15) * 15
+		newImage = './img/'+self.color+'tank'+str(int(approxAngle))+'.png'
 		self.image = pygame.image.load(newImage)
+    #Actually move
 		self.rect.move_ip(xMove,0)
 		self.rect.move(xMove,0)
