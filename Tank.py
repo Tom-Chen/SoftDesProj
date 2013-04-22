@@ -9,19 +9,18 @@ class Tank(pygame.sprite.Sprite):
 	#Defines a tank
 	def __init__(self,side):
 		pygame.sprite.Sprite.__init__(self)
-		
 		if(side == 0):
 			self.image = pygame.image.load('./img/bluetank315.png')
 			coords = self.image.get_rect()
-			self.rect = pygame.Rect(coords[0], coords[1]+40, coords[2], coords[3]-40)
-			self.rect.center = (100,100)
+			self.rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
+			self.rect.center = (100,400)
 			self.color = "blue"
 			self.angle = 315
 		if(side == 1):
 			self.image = pygame.image.load('./img/redtank225.png')
 			coords = self.image.get_rect()
-			self.rect = pygame.Rect(coords[0], coords[1]+40, coords[2], coords[3]-40)
-			self.rect.center = (500,100)
+			self.rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
+			self.rect.center = (600,400)
 			self.color = "red"
 			self.angle = 225
 

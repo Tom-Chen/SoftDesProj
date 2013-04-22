@@ -60,15 +60,29 @@ class TankMain():
 							if (self.side == 0):
 								self.side = 1
 								bluetankpos = self.bluetank.rect.center
-								self.reloadProjectiles(bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,'blue')
+								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,pygame.time.get_ticks(),'blue']])
 							elif (self.side == 1):
 								self.side = 0
 								redtankpos = self.redtank.rect.center
-								self.reloadProjectiles(redtankpos[0], redtankpos[1],self.redtank.angle,self.bluetank.power, 'red')
+								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,self.redtank.power,pygame.time.get_ticks(), 'red']])
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
+						if(event.key == K_t):
+							if(self.side ==0):
+								for projectile in self.projectile:
+									projectile.setTarget(self.bluetank.rect.center[0], self.bluetank.rect.center[1])
+									projectile.doTrack = True
+							else:
+								for projectile in self.projectile:
+									projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
+									projectile.doTrack = True
+
+						if(event.key == K_s):
+							for projectile in self.projectile:
+								newprojectiles = projectile.split()
+							self.reloadProjectiles(newprojectiles)
 				#Smooth movement, power, and angle handling
 				keys = pygame.key.get_pressed()
 				if keys[K_p]:
@@ -94,23 +108,28 @@ class TankMain():
 						self.bluetank.adjust(K_UP)
 					elif (self.side == 1) and keys[K_UP]:
 						self.redtank.adjust(K_UP)
+				
 				#Rendering stuff
 				self.redtank_sprite.clear(self.screen,self.background)
 				self.bluetank_sprite.clear(self.screen,self.background)
-				self.projectile_sprites.clear(self.screen,self.background)
+				for sprites in self.projectile_sprites:
+					sprites.clear(self.screen,self.background)
 				self.redtank_sprite.draw(self.screen)
 				self.bluetank_sprite.draw(self.screen)
-				self.projectile.domove()
-				self.projectile_sprites.draw(self.screen)
+				for projectile in self.projectile:
+					projectile.domove()
+				for sprites in self.projectile_sprites:
+					sprites.draw(self.screen)
 				pygame.display.flip()
 				current = pygame.time.get_ticks()
 				#WIP Collision Detection
-				if self.projectile.rect.colliderect(self.bluetank.rect) and self.projectile.color == 'red':
-					print("Blue Tank Hit")
-					self.projectile.kill()
-				if self.projectile.rect.colliderect(self.redtank.rect) and self.projectile.color == 'blue':
-					print("Red Tank Hit")
-					self.projectile.kill()
+				for projectile in self.projectile:
+					if projectile.rect.colliderect(self.bluetank.rect) and projectile.color == 'red':
+						print("Blue Tank Hit")
+						projectile.kill()
+					if projectile.rect.colliderect(self.redtank.rect) and projectile.color == 'blue':
+						print("Red Tank Hit")
+						projectile.kill()
 
 	def LoadSprites(self):
 	#Handles sprites
@@ -118,13 +137,24 @@ class TankMain():
 		self.redtank = Tank.Tank(side=1)
 		self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
 		self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
-		self.projectile = Projectile.Projectile(100, 100, 0, 5, pygame.time.get_ticks(), "red")
-		self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
+		self.projectile = [Projectile.Projectile(99999, 99999, 0, 5, pygame.time.get_ticks(), "red")]
+		self.projectile_sprites = []
+		for projectile in self.projectile:
+			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 	
-	def reloadProjectiles(self,x,y,angle,power, color):
-		self.projectile = Projectile.Projectile(x,y,angle,power, pygame.time.get_ticks(), color)
-		self.projectile_sprites = pygame.sprite.RenderPlain((self.projectile))
-		self.projectile_sprites.clear(self.screen,self.background)
+	def reloadProjectiles(self,projectileList):
+		for item in self.projectile:
+			item.kill()
+		for sprites in self.projectile_sprites:
+				sprites.clear(self.screen,self.background)
+		self.projectile = []
+		self.projectile_sprites = []
+		for projparams in projectileList:
+			self.projectile.append(Projectile.Projectile(projparams[0],projparams[1],projparams[2],projparams[3],projparams[4],projparams[5]))
+		for projectile in self.projectile:
+			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
+		for sprites in self.projectile_sprites:
+			sprites.clear(self.screen,self.background)
 
 #Starts game if run from command line
 if __name__ == "__main__":
