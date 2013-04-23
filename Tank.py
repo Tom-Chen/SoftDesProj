@@ -33,18 +33,9 @@ class Tank(pygame.sprite.Sprite):
 	def adjust(self,key):
 		xMove = 0;
     #Angle Adjustment
-		if (key == K_UP):
-			if self.color == 'blue':
-				self.angle -= 1
-			else:
-				self.angle += 1
-		elif (key == K_DOWN):
-			if self.color == 'blue':
-				self.angle += 1
-			else:
-				self.angle -= 1
+		self.angle = adjustAngle(self.color,self.angle,key)
     #Movement
-		elif (key == K_RIGHT):
+		if (key == K_RIGHT):
 			xMove = self.x_dist
 			print("Right")
 		elif (key == K_LEFT):
@@ -56,17 +47,8 @@ class Tank(pygame.sprite.Sprite):
 			if self.power>main.MAXSPEED:
 				self.power = 1
 			print("power", self.power)
-    #Change Angle
-		if self.color == 'red':
-			if self.angle <= 180:
-				self.angle = 180
-			if self.angle >= 270:
-				self.angle = 270
-		if self.color == 'blue':
-			if self.angle <= 270:
-				self.angle = 270
-			if self.angle >= 360:
-				self.angle = 360
+    #Cap the Angle
+		self.angle = capAngle(self.color,self.angle)
     #Adjust image based on angle
 		approxAngle = round(self.angle / 15) * 15
 		newImage = './img/'+self.color+'tank'+str(int(approxAngle))+'.png'
@@ -74,3 +56,31 @@ class Tank(pygame.sprite.Sprite):
     #Actually move
 		self.rect.move_ip(xMove,0)
 		self.rect.move(xMove,0)
+		
+def capAngle(color, angle):
+	#Caps the angle of the gun based on which tank it is
+	if color == 'red':
+		if angle <= 180:
+			return 180
+		if angle >= 270:
+			return 270
+	if color == 'blue':
+		if angle <= 270:
+			return  270
+		if angle >= 360:
+			return 360
+	return angle
+
+def adjustAngle(color, angle, key):
+	#Adjusts the angle of the tank's gun
+	if (key == K_UP):
+		if color == 'blue':
+			return (angle - 1)
+		else:
+			return (angle + 1)
+	if (key == K_DOWN):
+		if color == 'blue':
+			return (angle + 1)
+		else:
+			return (angle - 1)
+	return angle

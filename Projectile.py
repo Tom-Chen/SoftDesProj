@@ -20,15 +20,16 @@ class Projectile(pygame.sprite.Sprite):
 		self.timezero = timezero
 		self.color = color
 		self.power = power
+		self.damage = 50
 	def domove(self):
 		if self.doTrack:
 			values = self.track()
 			self.dx += values[0]
 			self.dy += values[1]
-			if self.dx >= 4:
-				self.dx = 4
-			if self.dy >= 4:
-				self.dy = 4
+			if self.dx >= 6:
+				self.dx = 6
+			if self.dy >= 6:
+				self.dy = 6
 		else:
 			self.dx = self.xv
 			self.dy = self.yv + main.GRAVITY*(pygame.time.get_ticks()-self.timezero)/main.FPS
@@ -42,7 +43,7 @@ class Projectile(pygame.sprite.Sprite):
 	def split(self):#NOTE: out of commision until multiple projectile support is added.
 		returnlist = []
 		for i in range(-30,30,15):
-			returnlist.append([self.rect.center[0],self.rect.center[1], math.degrees(math.atan2(self.dy,self.dx))+i,self.power,pygame.time.get_ticks(), self.color])
+			returnlist.append([self.rect.center[0],self.rect.center[1], math.degrees(math.atan2(self.dy,self.dx))+i,math.sqrt(self.dy*self.dy+self.dx*self.dx),pygame.time.get_ticks(), self.color])
 		return returnlist
 	
 	def track(self):

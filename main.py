@@ -83,6 +83,9 @@ class TankMain():
 							for projectile in self.projectile:
 								newprojectiles = projectile.split()
 							self.reloadProjectiles(newprojectiles)
+							for projectile in self.projectile:
+								projectile.damage /=2
+								
 				#Smooth movement, power, and angle handling
 				keys = pygame.key.get_pressed()
 				if keys[K_p]:
@@ -125,11 +128,15 @@ class TankMain():
 				#WIP Collision Detection
 				for projectile in self.projectile:
 					if projectile.rect.colliderect(self.bluetank.rect) and projectile.color == 'red':
-						print("Blue Tank Hit")
+						self.bluetank.health -= projectile.damage
+						print("Blue Tank Hit for " + str(projectile.damage) + " damage. New HP: " + str(self.bluetank.health))
 						projectile.kill()
+						self.projectile.remove(projectile)
 					if projectile.rect.colliderect(self.redtank.rect) and projectile.color == 'blue':
-						print("Red Tank Hit")
+						self.redtank.health -= projectile.damage
+						print("Red Tank Hit for " + str(projectile.damage) + " damage. New HP: " + str(self.redtank.health))
 						projectile.kill()
+						self.projectile.remove(projectile)
 
 	def LoadSprites(self):
 	#Handles sprites
