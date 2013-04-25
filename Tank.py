@@ -13,17 +13,18 @@ class Tank(pygame.sprite.Sprite):
 			self.image = pygame.image.load('./img/bluetank315.png')
 			coords = self.image.get_rect()
 			self.rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
-			self.rect.center = (100,400)
+			self.rect.center = (main.WIDTH/8,main.HEIGHT- main.HEIGHT/8)
 			self.color = "blue"
 			self.angle = 315
 		if(side == 1):
 			self.image = pygame.image.load('./img/redtank225.png')
 			coords = self.image.get_rect()
 			self.rect = pygame.Rect(coords[0], coords[1], coords[2], coords[3])
-			self.rect.center = (600,400)
+			self.rect.center = (main.WIDTH - main.WIDTH/8,main.HEIGHT- main.HEIGHT/8)
 			self.color = "red"
 			self.angle = 225
     #Common parameters
+		self.fireMode = 0
 		self.health = 1000
 		self.power = 10
 		self.x_dist = 3
@@ -36,10 +37,8 @@ class Tank(pygame.sprite.Sprite):
     #Movement
 		if (key == K_RIGHT):
 			xMove = self.x_dist
-			print("Right")
 		elif (key == K_LEFT):
 			xMove = -self.x_dist
-			print("Left")
     #Change power
 		if key == K_p:
 			self.power += 1

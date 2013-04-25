@@ -6,7 +6,7 @@ from pygame.locals import *
 import math
 
 class Projectile(pygame.sprite.Sprite):
-	def __init__(self,x,y, angle, power, timezero, color):
+	def __init__(self,x,y, angle, power, timezero, color, mode, target):
 		pygame.sprite.Sprite.__init__(self)
 		self.image = pygame.image.load('./img/shot.png')
 		self.rect = self.image.get_rect()
@@ -14,15 +14,26 @@ class Projectile(pygame.sprite.Sprite):
 		self.angle = math.radians(angle)
 		self.xv = int(math.cos(self.angle)*power)
 		self.yv = int(math.sin(self.angle)*power)
-		self.dx = 0
-		self.dy = 0
+		self.dx = self.xv
+		self.dy = self.yv
 		self.doTrack = False
 		self.timezero = timezero
 		self.color = color
 		self.power = power
 		self.damage = 50
+		self.hitScan = False
+		self.queueSplit = False
+		self.projectiles = []
+		self.splitMain = False
+		if mode == 2:
+			self.hitScanEnable()
+		if mode == 1:
+			self.setTarget(target[0],target[1])
+		if mode == 3:
+			self.queueSplit = True
+			
 	def domove(self):
-		if self.doTrack:
+		if self.doTrack and checkTime(self.timezero):
 			values = self.track()
 			self.dx += values[0]
 			self.dy += values[1]
@@ -30,9 +41,15 @@ class Projectile(pygame.sprite.Sprite):
 				self.dx = 6
 			if self.dy >= 6:
 				self.dy = 6
+		elif self.hitScan:
+			self.dx = self.dx
+			self.dy = self.dy
 		else:
 			self.dx = self.xv
 			self.dy = self.yv + main.GRAVITY*(pygame.time.get_ticks()-self.timezero)/main.FPS
+			if self.queueSplit:
+				if checkTime(self.timezero):
+					self.splitMain = True
 		
 		self.rect.move_ip(self.dx, self.dy)
 		self.rect.move(self.dx, self.dy)
@@ -40,11 +57,15 @@ class Projectile(pygame.sprite.Sprite):
 		self.targetx = x
 		self.targety = y
 		self.doTrack = True
-	def split(self):#NOTE: out of commision until multiple projectile support is added.
+		self.hitScan = False
+	def split(self):
 		returnlist = []
 		for i in range(-30,30,15):
-			returnlist.append([self.rect.center[0],self.rect.center[1], math.degrees(math.atan2(self.dy,self.dx))+i,math.sqrt(self.dy*self.dy+self.dx*self.dx),pygame.time.get_ticks(), self.color])
+			returnlist.append([self.rect.center[0],self.rect.center[1], math.degrees(math.atan2(self.dy,self.dx))+i,math.sqrt(self.dy*self.dy+self.dx*self.dx),pygame.time.get_ticks(), self.color,0,(0,0)])
 		return returnlist
+	def hitScanEnable(self):
+		self.hitScan = True
+		self.doTrack = False
 	
 	def track(self):
 		xdif = self.rect.center[0] - self.targetx
@@ -54,3 +75,8 @@ class Projectile(pygame.sprite.Sprite):
 		dx = -(math.cos(difangle)*.5)
 		dy = -(math.sin(difangle)*.5)
 		return [dx,dy]
+		
+def checkTime(timezero):
+	if pygame.time.get_ticks()-timezero >= 1000:
+		return True
+	return False

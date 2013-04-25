@@ -5,6 +5,7 @@ from pygame.locals import *
 import Tank
 import Text
 import Projectile
+import Terrain
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
@@ -25,11 +26,15 @@ global FPS
 FPS = 60
 global MAXSPEED
 MAXSPEED = 20
+global WIDTH
+WIDTH = 1280
+global HEIGHT
+HEIGHT = 720
 
 class TankMain():
 
 	#Initializes game
-	def __init__(self, width=800,height=600):
+	def __init__(self, width=WIDTH,height=HEIGHT):
 		pygame.init()
 		#Screen stuff
 		self.width = width
@@ -47,12 +52,11 @@ class TankMain():
 		#Checks for fonts
 		if pygame.font:
 			self.font = pygame.font.Font(None, 25)
-			
-		#Set up constant text and load font
+
+		#Load stuff
 		self.initText()
-		
-		#Load Sprites
 		self.loadSprites()
+		self.LoadTerrain()
 
 	def MainLoop(self):
 	#Primary loop/event queue
@@ -73,39 +77,70 @@ class TankMain():
 								self.bluetank.adjust(event.key)
 							elif (self.side == 1):
 								self.redtank.adjust(event.key)
-								
+
 						if(event.key == K_SPACE):
 							#Fire projectile and switch turn
+							bluetankpos = self.bluetank.rect.center
+							redtankpos = self.redtank.rect.center
 							if (self.side == 0):
 								self.side = 1
-								bluetankpos = self.bluetank.rect.center
-								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,pygame.time.get_ticks(),'blue']])
+								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,pygame.time.get_ticks(),'blue',self.bluetank.fireMode,(redtankpos[0], redtankpos[1]) ]])
 							elif (self.side == 1):
 								self.side = 0
-								redtankpos = self.redtank.rect.center
-								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,self.redtank.power,pygame.time.get_ticks(), 'red']])
-								
+								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,self.redtank.power,pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
+
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
-							
+
 						if(event.key == K_t):
 							if(self.side ==0):
 								for projectile in self.projectile:
 									projectile.setTarget(self.bluetank.rect.center[0], self.bluetank.rect.center[1])
 									projectile.doTrack = True
+									projectile.damage /=2
 							else:
 								for projectile in self.projectile:
 									projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
 									projectile.doTrack = True
-
+									projectile.damage /=2
+						if(event.key == K_1):
+							if self.side == 1:
+								self.redtank.fireMode = 1
+							if self.side == 0:
+								self.bluetank.fireMode = 1
+							print("Fire mode: Target")
+						if(event.key == K_2):
+							if self.side == 1:
+								self.redtank.fireMode = 2
+							if self.side == 0:
+								self.bluetank.fireMode = 2
+							print("Fire mode: HitScan")
+						if(event.key == K_3):
+							if self.side == 1:
+								self.redtank.fireMode = 3
+							if self.side == 0:
+								self.bluetank.fireMode = 3
+							print("Fire mode: Split")
+						if(event.key == K_0):
+							if self.side == 1:
+								self.redtank.fireMode = 0
+							if self.side == 0:
+								self.bluetank.fireMode = 0
+							print("Fire mode: Normal")
 						if(event.key == K_s):
+							newprojectiles = []
 							for projectile in self.projectile:
-								newprojectiles = projectile.split()
+								#newprojectiles = projectile.split()
+								for params in projectile.split():
+									newprojectiles.append(params)
 							self.reloadProjectiles(newprojectiles)
 							for projectile in self.projectile:
-								projectile.damage /=2
+								projectile.damage /=4
+						if event.key == K_h:
+							for projectile in self.projectile:
+								projectile.hitScanEnable()
 								
 				#Smooth movement, power, and angle handling
 				keys = pygame.key.get_pressed()
@@ -163,8 +198,19 @@ class TankMain():
 				self.bluetank_sprite.draw(self.screen)
 				for projectile in self.projectile:
 					projectile.domove()
-				for sprite in self.projectile_sprites:
-					sprite.draw(self.screen)
+					if projectile.splitMain:
+						newprojectiles = []
+						for projectile in self.projectile:
+							#newprojectiles = projectile.split()
+							for params in projectile.split():
+								newprojectiles.append(params)
+							self.reloadProjectiles(newprojectiles)
+							for projectile in self.projectile:
+								projectile.damage /=4
+				for sprites in self.projectile_sprites:
+					sprites.draw(self.screen)
+				for terrain in self.terrain_sprites:
+					terrain.draw(self.screen)
 				pygame.display.flip()
 				current = pygame.time.get_ticks()
 				
@@ -180,6 +226,11 @@ class TankMain():
 						print("Red Tank Hit for " + str(projectile.damage) + " damage. New HP: " + str(self.redtank.health))
 						projectile.kill()
 						self.projectile.remove(projectile)
+					for terrain in self.terrain:
+						if projectile.rect.colliderect(terrain.rect):
+							print("Terrain Hit")
+							projectile.kill()
+							self.projectile.remove(projectile)
 
 	def loadSprites(self):
 		#Tanks
@@ -187,13 +238,7 @@ class TankMain():
 		self.redtank = Tank.Tank(side=1)
 		self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
 		self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
-		
-		#Projectiles
-		self.projectile = [Projectile.Projectile(99999, 99999, 0, 5, pygame.time.get_ticks(), "red")]
-		self.projectile_sprites = []
-		for projectile in self.projectile:
-			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
-		
+
 		#Text
 		self.bluetext = {"power": Text.Text(self.bluetank.power,self.font,BLUE,(80,580)),
 										"angle": Text.Text(self.bluetank.angle,self.font,BLUE,(80,560)),
@@ -202,7 +247,7 @@ class TankMain():
 		self.bluetext_sprites = []
 		for value in self.bluetext.keys():
 			self.bluetext_sprites.append(pygame.sprite.RenderPlain(self.bluetext[value]))
-			
+
 		self.redtext = {"power": Text.Text(self.redtank.power,self.font,RED,(560,580)),
 										"angle": Text.Text(self.redtank.angle,self.font,RED,(560,560)),
 										"shots": Text.Text(self.redtank.weapon,self.font,RED,(560,540)),
@@ -210,6 +255,18 @@ class TankMain():
 		self.redtext_sprites = []
 		for value in self.redtext.keys():
 			self.redtext_sprites.append(pygame.sprite.RenderPlain(self.redtext[value]))
+
+		#Projectiles
+		self.projectile = [Projectile.Projectile(99999, 99999, 0, 5, pygame.time.get_ticks(), "red",0,(0,0))]
+		self.projectile_sprites = []
+		for projectile in self.projectile:
+			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
+
+	def LoadTerrain(self):
+		self.terrain = [Terrain.Terrain(400,800)]
+		self.terrain_sprites = []
+		for terrain in self.terrain:
+			self.terrain_sprites.append(pygame.sprite.RenderPlain(terrain))
 
 	def reloadProjectiles(self,projectileList):
 		for item in self.projectile:
@@ -219,7 +276,7 @@ class TankMain():
 		self.projectile = []
 		self.projectile_sprites = []
 		for projparams in projectileList:
-			self.projectile.append(Projectile.Projectile(projparams[0],projparams[1],projparams[2],projparams[3],projparams[4],projparams[5]))
+			self.projectile.append(Projectile.Projectile(projparams[0],projparams[1],projparams[2],projparams[3],projparams[4],projparams[5],projparams[6],projparams[7]))
 		for projectile in self.projectile:
 			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
 		for sprites in self.projectile_sprites:
@@ -246,5 +303,5 @@ class TankMain():
 
 #Starts game if run from command line
 if __name__ == "__main__":
-	MainWindow = TankMain()
+	MainWindow = TankMain(1280,720)
 	MainWindow.MainLoop()
