@@ -3,6 +3,7 @@ import sys
 import pygame
 from pygame.locals import *
 import Tank
+import Text
 import Projectile
 
 if not pygame.font: print 'Warning, fonts disabled'
@@ -26,26 +27,43 @@ global MAXSPEED
 MAXSPEED = 20
 
 class TankMain():
+
 	#Initializes game
 	def __init__(self, width=800,height=600):
 		pygame.init()
+		#Screen stuff
 		self.width = width
 		self.height = height
 		self.screen = pygame.display.set_mode((self.width, self.height))
 		self.screen.fill(SKY, rect=None, special_flags=0)
+		#Surfaces for clearing old values
 		self.background = pygame.Surface((self.width,self.height))
 		self.background.fill(SKY ,rect=None, special_flags=0)
 		pygame.display.set_caption('Tank!')
-		self.LoadSprites()
+		
+		#Red turn first
 		self.side = 1
-	
+		
+		#Checks for fonts
+		if pygame.font:
+			self.font = pygame.font.Font(None, 25)
+			
+		#Set up constant text and load font
+		self.initText()
+		
+		#Load Sprites
+		self.loadSprites()
+
 	def MainLoop(self):
 	#Primary loop/event queue
 		current = pygame.time.get_ticks()
+		
 		while 1:
 			#FPS and gamespeed limiter
 			if(pygame.time.get_ticks()-current>(1000/FPS)):
+			
 				for event in pygame.event.get():
+					#Quit
 					if event.type == pygame.QUIT: 
 						sys.exit()
 					elif event.type == KEYDOWN:
@@ -55,6 +73,7 @@ class TankMain():
 								self.bluetank.adjust(event.key)
 							elif (self.side == 1):
 								self.redtank.adjust(event.key)
+								
 						if(event.key == K_SPACE):
 							#Fire projectile and switch turn
 							if (self.side == 0):
@@ -65,10 +84,12 @@ class TankMain():
 								self.side = 0
 								redtankpos = self.redtank.rect.center
 								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,self.redtank.power,pygame.time.get_ticks(), 'red']])
+								
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
+							
 						if(event.key == K_t):
 							if(self.side ==0):
 								for projectile in self.projectile:
@@ -111,20 +132,42 @@ class TankMain():
 						self.bluetank.adjust(K_UP)
 					elif (self.side == 1) and keys[K_UP]:
 						self.redtank.adjust(K_UP)
-				
-				#Rendering stuff
+
+				#Update text
+				self.bluetext["power"].refresh(self.bluetank.power)
+				self.bluetext["angle"].refresh(self.bluetank.angle)
+				self.bluetext["shots"].refresh(self.bluetank.weapon)
+				self.bluetext["armor"].refresh(self.bluetank.health)
+
+				self.redtext["power"].refresh(self.redtank.power)
+				self.redtext["angle"].refresh(self.redtank.angle)
+				self.redtext["shots"].refresh(self.redtank.weapon)
+				self.redtext["armor"].refresh(self.redtank.health)
+
+				#Clearing old sprites
 				self.redtank_sprite.clear(self.screen,self.background)
 				self.bluetank_sprite.clear(self.screen,self.background)
-				for sprites in self.projectile_sprites:
-					sprites.clear(self.screen,self.background)
+				for sprite in self.bluetext_sprites:
+					sprite.clear(self.screen,self.background)
+				for sprite in self.redtext_sprites:
+					sprite.clear(self.screen,self.background)
+				for sprite in self.projectile_sprites:
+					sprite.clear(self.screen,self.background)
+				
+				#Rendering new frame
+				for sprite in self.bluetext_sprites:
+					sprite.draw(self.screen)
+				for sprite in self.redtext_sprites:
+					sprite.draw(self.screen)
 				self.redtank_sprite.draw(self.screen)
 				self.bluetank_sprite.draw(self.screen)
 				for projectile in self.projectile:
 					projectile.domove()
-				for sprites in self.projectile_sprites:
-					sprites.draw(self.screen)
+				for sprite in self.projectile_sprites:
+					sprite.draw(self.screen)
 				pygame.display.flip()
 				current = pygame.time.get_ticks()
+				
 				#WIP Collision Detection
 				for projectile in self.projectile:
 					if projectile.rect.colliderect(self.bluetank.rect) and projectile.color == 'red':
@@ -138,17 +181,36 @@ class TankMain():
 						projectile.kill()
 						self.projectile.remove(projectile)
 
-	def LoadSprites(self):
-	#Handles sprites
+	def loadSprites(self):
+		#Tanks
 		self.bluetank = Tank.Tank(side=0)
 		self.redtank = Tank.Tank(side=1)
 		self.bluetank_sprite = pygame.sprite.RenderPlain((self.bluetank))
 		self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
+		
+		#Projectiles
 		self.projectile = [Projectile.Projectile(99999, 99999, 0, 5, pygame.time.get_ticks(), "red")]
 		self.projectile_sprites = []
 		for projectile in self.projectile:
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
-	
+		
+		#Text
+		self.bluetext = {"power": Text.Text(self.bluetank.power,self.font,BLUE,(80,580)),
+										"angle": Text.Text(self.bluetank.angle,self.font,BLUE,(80,560)),
+										"shots": Text.Text(self.bluetank.weapon,self.font,BLUE,(80,540)),
+										"armor": Text.Text(self.bluetank.health,self.font,BLUE,(80,520))}
+		self.bluetext_sprites = []
+		for value in self.bluetext.keys():
+			self.bluetext_sprites.append(pygame.sprite.RenderPlain(self.bluetext[value]))
+			
+		self.redtext = {"power": Text.Text(self.redtank.power,self.font,RED,(560,580)),
+										"angle": Text.Text(self.redtank.angle,self.font,RED,(560,560)),
+										"shots": Text.Text(self.redtank.weapon,self.font,RED,(560,540)),
+										"armor": Text.Text(self.redtank.health,self.font,RED,(560,520))}
+		self.redtext_sprites = []
+		for value in self.redtext.keys():
+			self.redtext_sprites.append(pygame.sprite.RenderPlain(self.redtext[value]))
+
 	def reloadProjectiles(self,projectileList):
 		for item in self.projectile:
 			item.kill()
@@ -162,6 +224,25 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
 		for sprites in self.projectile_sprites:
 			sprites.clear(self.screen,self.background)
+
+	def initText(self):	
+		blupow = self.font.render("Power:", 1, BLUE)
+		self.screen.blit(blupow, blupow.get_rect(left=(20),top=(580)))
+		bluang = self.font.render("Angle:", 1, BLUE)
+		self.screen.blit(bluang, bluang.get_rect(left=(20),top=(560)))
+		bluwep = self.font.render("Shots:", 1, BLUE)
+		self.screen.blit(bluwep, bluwep.get_rect(left=(20),top=(540)))
+		bluhp = self.font.render("Armor:", 1, BLUE)
+		self.screen.blit(bluhp, bluhp.get_rect(left=(20),top=(520)))
+		
+		redpow = self.font.render("Power:", 1, RED)
+		self.screen.blit(redpow, redpow.get_rect(left=(500),top=(580)))
+		redang = self.font.render("Angle:", 1, RED)
+		self.screen.blit(redang, redang.get_rect(left=(500),top=(560)))
+		redwep = self.font.render("Shots:", 1, RED)
+		self.screen.blit(redwep, redwep.get_rect(left=(500),top=(540)))
+		redhp = self.font.render("Armor:", 1, RED)
+		self.screen.blit(redhp, redhp.get_rect(left=(500),top=(520)))
 
 #Starts game if run from command line
 if __name__ == "__main__":

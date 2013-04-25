@@ -4,11 +4,11 @@ import pygame
 from pygame.locals import *
 import main
 
-
 class Tank(pygame.sprite.Sprite):
 	#Defines a tank
 	def __init__(self,side):
 		pygame.sprite.Sprite.__init__(self)
+    #Differentiate red/blue tanks
 		if(side == 0):
 			self.image = pygame.image.load('./img/bluetank315.png')
 			coords = self.image.get_rect()
@@ -23,12 +23,11 @@ class Tank(pygame.sprite.Sprite):
 			self.rect.center = (600,400)
 			self.color = "red"
 			self.angle = 225
-
-		print(self.rect)
-
+    #Common parameters
 		self.health = 1000
 		self.power = 10
 		self.x_dist = 3
+		self.weapon= "Standard"
 		
 	def adjust(self,key):
 		xMove = 0;
