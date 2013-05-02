@@ -24,8 +24,8 @@ global TURN
 TURN = 0
 global FPS
 FPS = 60
-global MAXSPEED
-MAXSPEED = 20
+global MAXSPEED # Max projectile power
+MAXSPEED = 100
 global WIDTH
 WIDTH = 1280
 global HEIGHT
@@ -61,7 +61,7 @@ class TankMain():
 	def MainLoop(self):
 	#Primary loop/event queue
 		current = pygame.time.get_ticks()
-		
+		firetime = -3000
 		while 1:
 			#FPS and gamespeed limiter
 			if(pygame.time.get_ticks()-current>(1000/FPS)):
@@ -70,9 +70,9 @@ class TankMain():
 					#Quit
 					if event.type == pygame.QUIT: 
 						sys.exit()
-					elif event.type == KEYDOWN:
+					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3000):
 						#Controls movement and power/angle adjustment
-						if ((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
+						if((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
 							if (self.side == 0):
 								self.bluetank.adjust(event.key)
 							elif (self.side == 1):
@@ -82,29 +82,30 @@ class TankMain():
 							#Fire projectile and switch turn
 							bluetankpos = self.bluetank.rect.center
 							redtankpos = self.redtank.rect.center
+							firetime = pygame.time.get_ticks()
 							if (self.side == 0):
 								self.side = 1
-								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,self.bluetank.power,pygame.time.get_ticks(),'blue',self.bluetank.fireMode,(redtankpos[0], redtankpos[1]) ]])
+								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,round(self.bluetank.power/5),pygame.time.get_ticks(),'blue',self.bluetank.fireMode,(redtankpos[0], redtankpos[1]) ]])
 							elif (self.side == 1):
 								self.side = 0
-								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,self.redtank.power,pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
+								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,round(self.redtank.power/5),pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
 
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
 
-						if(event.key == K_t):
-							if(self.side ==0):
-								for projectile in self.projectile:
-									projectile.setTarget(self.bluetank.rect.center[0], self.bluetank.rect.center[1])
-									projectile.doTrack = True
-									projectile.damage /=2
-							else:
-								for projectile in self.projectile:
-									projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
-									projectile.doTrack = True
-									projectile.damage /=2
+						# if(event.key == K_t):
+							# if(self.side ==0):
+								# for projectile in self.projectile:
+									# projectile.setTarget(self.bluetank.rect.center[0], self.bluetank.rect.center[1])
+									# projectile.doTrack = True
+									# projectile.damage /=2
+							# else:
+								# for projectile in self.projectile:
+									# projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
+									# projectile.doTrack = True
+									# projectile.damage /=2
 						if(event.key == K_1):
 							if self.side == 1:
 								self.redtank.fireMode = 1
@@ -137,53 +138,54 @@ class TankMain():
 								self.bluetank.fireMode = 0
 								self.bluetank.weapon = "Normal"
 							print("Fire mode: Normal")
-						if(event.key == K_s):
-							newprojectiles = []
-							for projectile in self.projectile:
-								#newprojectiles = projectile.split()
-								for params in projectile.split():
-									newprojectiles.append(params)
-							self.reloadProjectiles(newprojectiles)
-							for projectile in self.projectile:
-								projectile.damage /=4
-						if event.key == K_h:
-							for projectile in self.projectile:
-								projectile.hitScanEnable()
+						# if(event.key == K_s):
+							# newprojectiles = []
+							# for projectile in self.projectile:
+								# #newprojectiles = projectile.split()
+								# for params in projectile.split():
+									# newprojectiles.append(params)
+							# self.reloadProjectiles(newprojectiles)
+							# for projectile in self.projectile:
+								# projectile.damage /=4
+						# if event.key == K_h:
+							# for projectile in self.projectile:
+								# projectile.hitScanEnable()
 								
 				#Smooth movement, power, and angle handling
 				keys = pygame.key.get_pressed()
-				if keys[K_p]:
-					if (self.side == 0):
-						self.bluetank.adjust(K_p)
-					elif (self.side == 1):
-						self.redtank.adjust(K_p)
-				if keys[K_LEFT] or keys[K_RIGHT]:
-					if (self.side == 0) and keys[K_LEFT]:
-						self.bluetank.adjust(K_LEFT)
-					elif (self.side == 1) and keys[K_LEFT]:
-						self.redtank.adjust(K_LEFT)
-					elif (self.side == 0) and keys[K_RIGHT]:
-						self.bluetank.adjust(K_RIGHT)
-					elif (self.side == 1) and keys[K_RIGHT]:
-						self.redtank.adjust(K_RIGHT)
-				if keys[K_UP] or keys[K_DOWN]:
-					if (self.side == 0) and keys[K_DOWN]:
-						self.bluetank.adjust(K_DOWN)
-					elif (self.side == 1) and keys[K_DOWN]:
-						self.redtank.adjust(K_DOWN)
-					elif (self.side == 0) and keys[K_UP]:
-						self.bluetank.adjust(K_UP)
-					elif (self.side == 1) and keys[K_UP]:
-						self.redtank.adjust(K_UP)
+				if(pygame.time.get_ticks() - firetime > 3000):
+					if keys[K_p]:
+						if (self.side == 0):
+							self.bluetank.adjust(K_p)
+						elif (self.side == 1):
+							self.redtank.adjust(K_p)
+					if keys[K_LEFT] or keys[K_RIGHT]:
+						if (self.side == 0) and keys[K_LEFT]:
+							self.bluetank.adjust(K_LEFT)
+						elif (self.side == 1) and keys[K_LEFT]:
+							self.redtank.adjust(K_LEFT)
+						elif (self.side == 0) and keys[K_RIGHT]:
+							self.bluetank.adjust(K_RIGHT)
+						elif (self.side == 1) and keys[K_RIGHT]:
+							self.redtank.adjust(K_RIGHT)
+					if keys[K_UP] or keys[K_DOWN]:
+						if (self.side == 0) and keys[K_DOWN]:
+							self.bluetank.adjust(K_DOWN)
+						elif (self.side == 1) and keys[K_DOWN]:
+							self.redtank.adjust(K_DOWN)
+						elif (self.side == 0) and keys[K_UP]:
+							self.bluetank.adjust(K_UP)
+						elif (self.side == 1) and keys[K_UP]:
+							self.redtank.adjust(K_UP)
 
 				#Update text
 				self.bluetext["power"].refresh(self.bluetank.power)
-				self.bluetext["angle"].refresh(self.bluetank.angle)
+				self.bluetext["angle"].refresh(360-self.bluetank.angle)
 				self.bluetext["shots"].refresh(self.bluetank.weapon)
 				self.bluetext["armor"].refresh(self.bluetank.health)
 
 				self.redtext["power"].refresh(self.redtank.power)
-				self.redtext["angle"].refresh(self.redtank.angle)
+				self.redtext["angle"].refresh(self.redtank.angle-180)
 				self.redtext["shots"].refresh(self.redtank.weapon)
 				self.redtext["armor"].refresh(self.redtank.health)
 
@@ -248,18 +250,18 @@ class TankMain():
 		self.redtank_sprite = pygame.sprite.RenderPlain((self.redtank))
 
 		#Text
-		self.bluetext = {"power": Text.Text(self.bluetank.power,self.font,BLUE,(80,580)),
-										"angle": Text.Text(self.bluetank.angle,self.font,BLUE,(80,560)),
-										"shots": Text.Text(self.bluetank.weapon,self.font,BLUE,(80,540)),
-										"armor": Text.Text(self.bluetank.health,self.font,BLUE,(80,520))}
+		self.bluetext = {"power": Text.Text(self.bluetank.power,self.font,BLUE,(80,680)),
+										"angle": Text.Text((450-self.bluetank.angle),self.font,BLUE,(80,660)),
+										"shots": Text.Text(self.bluetank.weapon,self.font,BLUE,(80,640)),
+										"armor": Text.Text(self.bluetank.health,self.font,BLUE,(80,620))}
 		self.bluetext_sprites = []
 		for value in self.bluetext.keys():
 			self.bluetext_sprites.append(pygame.sprite.RenderPlain(self.bluetext[value]))
 
-		self.redtext = {"power": Text.Text(self.redtank.power,self.font,RED,(560,580)),
-										"angle": Text.Text(self.redtank.angle,self.font,RED,(560,560)),
-										"shots": Text.Text(self.redtank.weapon,self.font,RED,(560,540)),
-										"armor": Text.Text(self.redtank.health,self.font,RED,(560,520))}
+		self.redtext = {"power": Text.Text(self.redtank.power,self.font,RED,(1160,680)),
+										"angle": Text.Text((self.redtank.angle-180),self.font,RED,(1160,660)),
+										"shots": Text.Text(self.redtank.weapon,self.font,RED,(1160,640)),
+										"armor": Text.Text(self.redtank.health,self.font,RED,(1160,620))}
 		self.redtext_sprites = []
 		for value in self.redtext.keys():
 			self.redtext_sprites.append(pygame.sprite.RenderPlain(self.redtext[value]))
@@ -292,22 +294,22 @@ class TankMain():
 
 	def initText(self):	
 		blupow = self.font.render("Power:", 1, BLUE)
-		self.screen.blit(blupow, blupow.get_rect(left=(20),top=(580)))
+		self.screen.blit(blupow, blupow.get_rect(left=(20),top=(680)))
 		bluang = self.font.render("Angle:", 1, BLUE)
-		self.screen.blit(bluang, bluang.get_rect(left=(20),top=(560)))
+		self.screen.blit(bluang, bluang.get_rect(left=(20),top=(660)))
 		bluwep = self.font.render("Shots:", 1, BLUE)
-		self.screen.blit(bluwep, bluwep.get_rect(left=(20),top=(540)))
+		self.screen.blit(bluwep, bluwep.get_rect(left=(20),top=(640)))
 		bluhp = self.font.render("Armor:", 1, BLUE)
-		self.screen.blit(bluhp, bluhp.get_rect(left=(20),top=(520)))
+		self.screen.blit(bluhp, bluhp.get_rect(left=(20),top=(620)))
 		
 		redpow = self.font.render("Power:", 1, RED)
-		self.screen.blit(redpow, redpow.get_rect(left=(500),top=(580)))
+		self.screen.blit(redpow, redpow.get_rect(left=(1100),top=(680)))
 		redang = self.font.render("Angle:", 1, RED)
-		self.screen.blit(redang, redang.get_rect(left=(500),top=(560)))
+		self.screen.blit(redang, redang.get_rect(left=(1100),top=(660)))
 		redwep = self.font.render("Shots:", 1, RED)
-		self.screen.blit(redwep, redwep.get_rect(left=(500),top=(540)))
+		self.screen.blit(redwep, redwep.get_rect(left=(1100),top=(640)))
 		redhp = self.font.render("Armor:", 1, RED)
-		self.screen.blit(redhp, redhp.get_rect(left=(500),top=(520)))
+		self.screen.blit(redhp, redhp.get_rect(left=(1100),top=(620)))
 
 #Starts game if run from command line
 if __name__ == "__main__":
