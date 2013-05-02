@@ -31,6 +31,7 @@ class Tank(pygame.sprite.Sprite):
 		self.weapon= "Standard"
 		
 	def adjust(self,key):
+
 		xMove = 0;
     #Angle Adjustment
 		self.angle = adjustAngle(self.color,self.angle,key)
