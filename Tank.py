@@ -24,7 +24,7 @@ class Tank(pygame.sprite.Sprite):
 			self.rect.center = (main.WIDTH - main.WIDTH/4,main.HEIGHT- main.HEIGHT/4)
 			self.color = "red"
 			self.angle = 225
-			self.ai = True
+			self.ai = False
     #Common parameters
 		self.moveBack = False
 		self.adjustshot = 0

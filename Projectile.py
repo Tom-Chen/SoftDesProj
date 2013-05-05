@@ -25,9 +25,9 @@ class Projectile(pygame.sprite.Sprite):
 		self.queueSplit = False
 		self.projectiles = []
 		self.splitMain = False
-		if mode == 2:
+		if mode == 4:
 			self.hitScanEnable()
-		if mode == 1:
+		if mode == 2:
 			self.setTarget(target[0],target[1])
 		if mode == 3:
 			self.queueSplit = True

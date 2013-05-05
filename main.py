@@ -64,16 +64,22 @@ class TankMain():
 	def MainLoop(self):
 	#Primary loop/event queue
 		current = pygame.time.get_ticks()
-		firetime = -3000
+		firetime = -3200
 		while 1:
 			#FPS and gamespeed limiter
 			if(pygame.time.get_ticks()-current>(1000/FPS)):
-			
+				#Victory condition
+				if(self.bluetank.health == 0):
+					print("Red Tank wins. Congratulations!")
+					sys.exit()
+				if(self.redtank.health == 0):
+					print("Blue Tank wins. Congratulations!")
+					sys.exit()
 				for event in pygame.event.get():
 					#Quit
 					if event.type == pygame.QUIT: 
 						sys.exit()
-					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3000):
+					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3200):
 						#Controls movement and power/angle adjustment
 						if((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
 							if (self.side == 0):
@@ -129,20 +135,20 @@ class TankMain():
 									# projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
 									# projectile.doTrack = True
 									# projectile.damage /=2
-						if(event.key == K_1):
-							if self.side == 1:
-								self.redtank.fireMode = 1
-								self.redtank.weapon = "Tracking"
-							if self.side == 0:
-								self.bluetank.fireMode = 1
-								self.bluetank.weapon = "Tracking"
-							print("Fire mode: Target")
 						if(event.key == K_2):
 							if self.side == 1:
 								self.redtank.fireMode = 2
-								self.redtank.weapon = "Hitscan"
+								self.redtank.weapon = "Tracking"
 							if self.side == 0:
 								self.bluetank.fireMode = 2
+								self.bluetank.weapon = "Tracking"
+							print("Fire mode: Target")
+						if(event.key == K_4):
+							if self.side == 1:
+								self.redtank.fireMode = 4
+								self.redtank.weapon = "Hitscan"
+							if self.side == 0:
+								self.bluetank.fireMode = 4
 								self.bluetank.weapon = "Hitscan"
 							print("Fire mode: HitScan")
 						if(event.key == K_3):
@@ -153,12 +159,12 @@ class TankMain():
 								self.bluetank.fireMode = 3
 								self.bluetank.weapon = "Split"
 							print("Fire mode: Split")
-						if(event.key == K_0):
+						if(event.key == K_1):
 							if self.side == 1:
-								self.redtank.fireMode = 0
+								self.redtank.fireMode = 1
 								self.redtank.weapon = "Normal"
 							if self.side == 0:
-								self.bluetank.fireMode = 0
+								self.bluetank.fireMode = 1
 								self.bluetank.weapon = "Normal"
 							print("Fire mode: Normal")
 						# if(event.key == K_s):
@@ -176,7 +182,7 @@ class TankMain():
 								
 				#Smooth movement, power, and angle handling
 				keys = pygame.key.get_pressed()
-				if(pygame.time.get_ticks() - firetime > 3000):
+				if(pygame.time.get_ticks() - firetime > 3200):
 					if keys[K_p]:
 						if (self.side == 0):
 							self.bluetank.adjust(K_p)
