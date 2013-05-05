@@ -43,8 +43,10 @@ class TankMain():
 		self.screen = pygame.display.set_mode((self.width, self.height))
 		self.screen.fill(SKY, rect=None, special_flags=0)
 		#Surfaces for clearing old values
-		self.background = pygame.Surface((self.width,self.height))
-		self.background.fill(SKY ,rect=None, special_flags=0)
+		self.skyground = pygame.Surface((self.width,self.height))
+		self.skyground.fill(SKY ,rect=None, special_flags=0)
+		self.groundground = pygame.Surface((self.width,self.height))
+		self.groundground.fill(GROUND ,rect=None, special_flags=0)
 		pygame.display.set_caption('Tank!')
 		
 		#Red turn first
@@ -55,9 +57,9 @@ class TankMain():
 			self.font = pygame.font.Font(None, 25)
 
 		#Load stuff
-		self.initText()
-		self.loadSprites()
 		self.LoadTerrain()
+		self.loadSprites()
+		self.initText()
 
 	def MainLoop(self):
 	#Primary loop/event queue
@@ -108,8 +110,8 @@ class TankMain():
 
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
-							pygame.draw.rect(self.background, (0,0,255),self.bluetank.rect)
-							pygame.draw.rect(self.background, (255,0,0),self.redtank.rect)
+							pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
+							pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
 
 						# if(event.key == K_t):
 							# if(self.side ==0):
@@ -206,14 +208,14 @@ class TankMain():
 				self.redtext["armor"].refresh(self.redtank.health)
 
 				#Clearing old sprites
-				self.redtank_sprite.clear(self.screen,self.background)
-				self.bluetank_sprite.clear(self.screen,self.background)
+				self.redtank_sprite.clear(self.screen,self.skyground)
+				self.bluetank_sprite.clear(self.screen,self.skyground)
 				for sprite in self.bluetext_sprites:
-					sprite.clear(self.screen,self.background)
+					sprite.clear(self.screen,self.groundground)
 				for sprite in self.redtext_sprites:
-					sprite.clear(self.screen,self.background)
+					sprite.clear(self.screen,self.groundground)
 				for sprite in self.projectile_sprites:
-					sprite.clear(self.screen,self.background)
+					sprite.clear(self.screen,self.skyground)
 				
 				#Rendering new frame
 				for sprite in self.bluetext_sprites:
@@ -235,8 +237,6 @@ class TankMain():
 								projectile.damage /=4
 				for sprites in self.projectile_sprites:
 					sprites.draw(self.screen)
-				for terrain in self.terrain_sprites:
-					terrain.draw(self.screen)
 				pygame.display.flip()
 				current = pygame.time.get_ticks()
 				
@@ -254,13 +254,14 @@ class TankMain():
 						self.projectile.remove(projectile)
 					for terrain in self.terrain:
 						if projectile.rect.colliderect(terrain.rect):
-							print("Terrain Hit")
-							if projectile.color == 'red':
-								self.redtank.adjustshot += 1
-							if projectile.color == 'blue':
-								self.bluetank.adjustshot += 1
-							projectile.kill()
-							self.projectile.remove(projectile)
+							if projectile in self.projectile:
+								print("Terrain Hit")
+								if projectile.color == 'red':
+									self.redtank.adjustshot += 1
+								if projectile.color == 'blue':
+									self.bluetank.adjustshot += 1
+								projectile.kill()
+								self.projectile.remove(projectile)
 					if self.redtank.adjustshot >2:
 						self.redtank.adjustshot = 0
 						self.redtank.moveBack = True
@@ -299,16 +300,18 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 
 	def LoadTerrain(self):
-		self.terrain = [Terrain.Terrain(800,600,'cliff')]
+		self.terrain = [Terrain.Terrain(640,656,'ground'), Terrain.Terrain(640,418,'mount2')]
 		self.terrain_sprites = []
 		for terrain in self.terrain:
 			self.terrain_sprites.append(pygame.sprite.RenderPlain(terrain))
+		for terrain in self.terrain_sprites:
+			terrain.draw(self.screen)
 
 	def reloadProjectiles(self,projectileList):
 		for item in self.projectile:
 			item.kill()
 		for sprites in self.projectile_sprites:
-				sprites.clear(self.screen,self.background)
+				sprites.clear(self.screen,self.skyground)
 		self.projectile = []
 		self.projectile_sprites = []
 		for projparams in projectileList:
@@ -316,7 +319,7 @@ class TankMain():
 		for projectile in self.projectile:
 			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
 		for sprites in self.projectile_sprites:
-			sprites.clear(self.screen,self.background)
+			sprites.clear(self.screen,self.skyground)
 			
 	def getShot(self,xpos,xenemy,xadjust):
 		angle = 30 + xadjust*15
