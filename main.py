@@ -26,7 +26,7 @@ TURN = 0
 global FPS
 FPS = 60
 global MAXSPEED # Max projectile power
-MAXSPEED = 100
+MAXSPEED = 150
 global WIDTH
 WIDTH = 1280
 global HEIGHT
@@ -90,6 +90,12 @@ class TankMain():
 							elif (self.side == 1):
 								self.side = 0
 								if(self.redtank.ai):
+									if self.redtank.moveBack:
+										while(self.redtank.rect.center[0]<redtankpos[0] + 100):
+											self.redtank.adjust(K_RIGHT)
+										self.redtank.moveBack = False
+									bluetankpos = self.bluetank.rect.center
+									redtankpos = self.redtank.rect.center
 									anglepower = self.getShot(redtankpos[0],bluetankpos[0],self.redtank.adjustshot)
 									while(self.redtank.angle != 180+anglepower[0]):
 										if self.redtank.angle > 180+anglepower[0]:
@@ -255,10 +261,10 @@ class TankMain():
 								self.bluetank.adjustshot += 1
 							projectile.kill()
 							self.projectile.remove(projectile)
-					if self.redtank.adjustshot >1:
+					if self.redtank.adjustshot >2:
 						self.redtank.adjustshot = 0
-						#move back
-					if self.bluetank.adjustshot > 1:
+						self.redtank.moveBack = True
+					if self.bluetank.adjustshot > 2:
 						self.bluetank.adjusthsot = 0
 						#move back
 
@@ -293,7 +299,7 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 
 	def LoadTerrain(self):
-		self.terrain = [Terrain.Terrain(800,600)]
+		self.terrain = [Terrain.Terrain(800,600,'cliff')]
 		self.terrain_sprites = []
 		for terrain in self.terrain:
 			self.terrain_sprites.append(pygame.sprite.RenderPlain(terrain))
@@ -313,7 +319,7 @@ class TankMain():
 			sprites.clear(self.screen,self.background)
 			
 	def getShot(self,xpos,xenemy,xadjust):
-		angle = 45 + xadjust*15
+		angle = 30 + xadjust*15
 		
 		if xadjust>0:
 			angle +=15
@@ -321,9 +327,8 @@ class TankMain():
 			angle = 89
 		dx = math.fabs(xpos-xenemy)
 		v = int(math.sqrt(dx*(1000/FPS)/(math.sin(2*math.radians(angle))))*.77)
-		if v>100:
-			v=100
-
+		if v>MAXSPEED:
+			v=MAXSPEED
 		return (angle,v)
 
 	def initText(self):	

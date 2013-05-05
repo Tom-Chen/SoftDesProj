@@ -26,6 +26,7 @@ class Tank(pygame.sprite.Sprite):
 			self.angle = 225
 			self.ai = True
     #Common parameters
+		self.moveBack = False
 		self.adjustshot = 0
 		self.fireMode = 0
 		self.health = 1000

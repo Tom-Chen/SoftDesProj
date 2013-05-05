@@ -54,6 +54,7 @@ class Projectile(pygame.sprite.Sprite):
 		self.rect.move_ip(self.dx, self.dy)
 		self.rect.move(self.dx, self.dy)
 	def setTarget(self,x, y):
+		self.damage/=2
 		self.targetx = x
 		self.targety = y
 		self.doTrack = True
