@@ -5,12 +5,18 @@ SoftDesProj
 
 To Do:
 
-Add end condition
+Player information display
 
-Mess with terrain rectangles
+Fix collision detection
+
+Add ground
+
+Add damage
 
 Polish gravity/physics equations
 
 Make shot originate from barrel
 
-Finalize AI
+More weapons
+
+AI Player
