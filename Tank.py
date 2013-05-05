@@ -16,6 +16,7 @@ class Tank(pygame.sprite.Sprite):
 			self.rect.center = (main.WIDTH/4,main.HEIGHT- main.HEIGHT/4)
 			self.color = "blue"
 			self.angle = 315
+			self.ai = False
 		if(side == 1):
 			self.image = pygame.image.load('./img/redtank225.png')
 			coords = self.image.get_rect()
@@ -23,7 +24,9 @@ class Tank(pygame.sprite.Sprite):
 			self.rect.center = (main.WIDTH - main.WIDTH/4,main.HEIGHT- main.HEIGHT/4)
 			self.color = "red"
 			self.angle = 225
+			self.ai = True
     #Common parameters
+		self.adjustshot = 0
 		self.fireMode = 0
 		self.health = 1000
 		self.power = 50

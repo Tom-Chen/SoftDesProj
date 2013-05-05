@@ -6,6 +6,7 @@ import Tank
 import Text
 import Projectile
 import Terrain
+import math
 
 if not pygame.font: print 'Warning, fonts disabled'
 if not pygame.mixer: print 'Warning, sound disabled'
@@ -88,6 +89,15 @@ class TankMain():
 								self.reloadProjectiles([[bluetankpos[0], bluetankpos[1],self.bluetank.angle,round(self.bluetank.power/5),pygame.time.get_ticks(),'blue',self.bluetank.fireMode,(redtankpos[0], redtankpos[1]) ]])
 							elif (self.side == 1):
 								self.side = 0
+								if(self.redtank.ai):
+									anglepower = self.getShot(redtankpos[0],bluetankpos[0],self.redtank.adjustshot)
+									while(self.redtank.angle != 180+anglepower[0]):
+										if self.redtank.angle > 180+anglepower[0]:
+											self.redtank.adjust(K_DOWN)
+										elif self.redtank.angle < 180+anglepower[0]:
+											self.redtank.adjust(K_UP)
+									while(self.redtank.power != anglepower[1]):
+										self.redtank.adjust(K_p)
 								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,round(self.redtank.power/5),pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
 
 						#DEBUG ONLY - shows tank hitbox
@@ -239,8 +249,18 @@ class TankMain():
 					for terrain in self.terrain:
 						if projectile.rect.colliderect(terrain.rect):
 							print("Terrain Hit")
+							if projectile.color == 'red':
+								self.redtank.adjustshot += 1
+							if projectile.color == 'blue':
+								self.bluetank.adjustshot += 1
 							projectile.kill()
 							self.projectile.remove(projectile)
+					if self.redtank.adjustshot >1:
+						self.redtank.adjustshot = 0
+						#move back
+					if self.bluetank.adjustshot > 1:
+						self.bluetank.adjusthsot = 0
+						#move back
 
 	def loadSprites(self):
 		#Tanks
@@ -273,7 +293,7 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 
 	def LoadTerrain(self):
-		self.terrain = [Terrain.Terrain(400,800)]
+		self.terrain = [Terrain.Terrain(800,600)]
 		self.terrain_sprites = []
 		for terrain in self.terrain:
 			self.terrain_sprites.append(pygame.sprite.RenderPlain(terrain))
@@ -291,6 +311,20 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
 		for sprites in self.projectile_sprites:
 			sprites.clear(self.screen,self.background)
+			
+	def getShot(self,xpos,xenemy,xadjust):
+		angle = 45 + xadjust*15
+		
+		if xadjust>0:
+			angle +=15
+		if angle >89:
+			angle = 89
+		dx = math.fabs(xpos-xenemy)
+		v = int(math.sqrt(dx*(1000/FPS)/(math.sin(2*math.radians(angle))))*.77)
+		if v>100:
+			v=100
+
+		return (angle,v)
 
 	def initText(self):	
 		blupow = self.font.render("Power:", 1, BLUE)
