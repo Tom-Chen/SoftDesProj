@@ -116,11 +116,18 @@ class TankMain():
 
 						#DEBUG ONLY - shows tank hitbox
 						if(event.key == K_CAPSLOCK):
-
 							pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
 							for terrain in self.terrain:
 								pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
+
+						if(event.key == K_TAB):
+							if(self.redtank.ai == True):
+								self.redtank.ai = False
+								print("Red AI toggled off.")
+							elif(self.redtank.ai == False):
+								self.redtank.ai = True
+								print("Red AI toggled on.")
 
 						# if(event.key == K_t):
 							# if(self.side ==0):
