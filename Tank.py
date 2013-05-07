@@ -29,7 +29,7 @@ class Tank(pygame.sprite.Sprite):
 		self.moveBack = False
 		self.adjustshot = 0
 		self.fireMode = 0
-		self.health = 1000
+		self.health = 500
 		self.power = 50
 		self.x_dist = 3
 		self.weapon= "Standard"
