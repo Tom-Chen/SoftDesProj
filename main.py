@@ -69,10 +69,10 @@ class TankMain():
 			#FPS and gamespeed limiter
 			if(pygame.time.get_ticks()-current>(1000/FPS)):
 				#Victory condition
-				if(self.bluetank.health == 0):
+				if(self.bluetank.health <= 0):
 					print("Red Tank wins. Congratulations!")
 					sys.exit()
-				if(self.redtank.health == 0):
+				if(self.redtank.health <= 0):
 					print("Blue Tank wins. Congratulations!")
 					sys.exit()
 				for event in pygame.event.get():
@@ -114,13 +114,13 @@ class TankMain():
 										self.redtank.adjust(K_p)
 								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,round(self.redtank.power/5),pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
 
-						# #DEBUG ONLY - shows tank hitbox
-						# if(event.key == K_CAPSLOCK):
+						#DEBUG ONLY - shows tank hitbox
+						if(event.key == K_CAPSLOCK):
 
-							# pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
-							# pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
-							# for terrain in self.terrain:
-								# pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
+							pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
+							pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
+							for terrain in self.terrain:
+								pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
 
 						# if(event.key == K_t):
 							# if(self.side ==0):
@@ -309,7 +309,7 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 
 	def LoadTerrain(self):
-		self.terrain = [Terrain.Terrain(640,656,'ground'), Terrain.Terrain(640,418,'mount2')]
+		self.terrain = [Terrain.Terrain(640,656,'ground'), Terrain.Terrain(640,418,'mount4')]
 		self.terrain_sprites = []
 		for terrain in self.terrain:
 			self.terrain_sprites.append(pygame.sprite.RenderPlain(terrain))

@@ -11,4 +11,3 @@ class Terrain(pygame.sprite.Sprite):
 		self.image = pygame.image.load('./img/' + imgName + '.png')
 		self.rect = self.image.get_rect()
 		self.rect.center = (x,y)
-

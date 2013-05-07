@@ -8,7 +8,7 @@ class Tank(pygame.sprite.Sprite):
 	#Defines a tank
 	def __init__(self,side):
 		pygame.sprite.Sprite.__init__(self)
-    #Differentiate red/blue tanks
+				#Differentiate red/blue tanks
 		if(side == 0):
 			self.image = pygame.image.load('./img/bluetank315.png')
 			coords = self.image.get_rect()
@@ -25,7 +25,7 @@ class Tank(pygame.sprite.Sprite):
 			self.color = "red"
 			self.angle = 225
 			self.ai = False
-    #Common parameters
+		#Common parameters
 		self.moveBack = False
 		self.adjustshot = 0
 		self.fireMode = 0
@@ -37,25 +37,25 @@ class Tank(pygame.sprite.Sprite):
 	def adjust(self,key):
 
 		xMove = 0;
-    #Angle Adjustment
+		#Angle Adjustment
 		self.angle = adjustAngle(self.color,self.angle,key)
-    #Movement
+		#Movement
 		if (key == K_RIGHT):
 			xMove = self.x_dist
 		elif (key == K_LEFT):
 			xMove = -self.x_dist
-    #Change power
+		#Change power
 		if key == K_p:
 			self.power += 1
 			if self.power>main.MAXSPEED:
 				self.power = 1
-    #Cap the Angle
+		#Cap the Angle
 		self.angle = capAngle(self.color,self.angle)
-    #Adjust image based on angle
+		#Adjust image based on angle
 		approxAngle = round(self.angle / 15) * 15
 		newImage = './img/'+self.color+'tank'+str(int(approxAngle))+'.png'
 		self.image = pygame.image.load(newImage)
-    #Actually move
+		#Actually move
 		self.rect.move_ip(xMove,0)
 		self.rect.move(xMove,0)
 		
@@ -68,7 +68,7 @@ def capAngle(color, angle):
 			return 270
 	if color == 'blue':
 		if angle <= 270:
-			return  270
+			return		270
 		if angle >= 360:
 			return 360
 	return angle
