@@ -82,9 +82,9 @@ class TankMain():
 					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3200):
 						#Controls movement and power/angle adjustment
 						if((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
-							if (self.side == 0):
+							if (self.side == 0) and self.bluetank.rect.centerx < 481 and self.bluetank.rect.centerx > 53:
 								self.bluetank.adjust(event.key)
-							elif (self.side == 1):
+							elif (self.side == 1) and self.redtank.rect.centerx > 799 and self.redtank.rect.centerx < 1227:
 								self.redtank.adjust(event.key)
 
 						if(event.key == K_SPACE):
@@ -114,15 +114,13 @@ class TankMain():
 										self.redtank.adjust(K_p)
 								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,round(self.redtank.power/5),pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
 
-						#DEBUG ONLY - shows tank hitbox
-						if(event.key == K_CAPSLOCK):
+						# #DEBUG ONLY - shows tank hitbox
+						# if(event.key == K_CAPSLOCK):
 
-							pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
-							pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
-							for terrain in self.terrain:
-								pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
-
-
+							# pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
+							# pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
+							# for terrain in self.terrain:
+								# pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
 
 						# if(event.key == K_t):
 							# if(self.side ==0):
@@ -189,13 +187,13 @@ class TankMain():
 						elif (self.side == 1):
 							self.redtank.adjust(K_p)
 					if keys[K_LEFT] or keys[K_RIGHT]:
-						if (self.side == 0) and keys[K_LEFT]:
+						if (self.side == 0) and keys[K_LEFT] and self.bluetank.rect.centerx > 77:
 							self.bluetank.adjust(K_LEFT)
-						elif (self.side == 1) and keys[K_LEFT]:
+						elif (self.side == 1) and keys[K_LEFT] and self.redtank.rect.centerx > 823:
 							self.redtank.adjust(K_LEFT)
-						elif (self.side == 0) and keys[K_RIGHT]:
+						elif (self.side == 0) and keys[K_RIGHT] and self.bluetank.rect.centerx < 457:
 							self.bluetank.adjust(K_RIGHT)
-						elif (self.side == 1) and keys[K_RIGHT]:
+						elif (self.side == 1) and keys[K_RIGHT] and self.redtank.rect.centerx < 1203:
 							self.redtank.adjust(K_RIGHT)
 					if keys[K_UP] or keys[K_DOWN]:
 						if (self.side == 0) and keys[K_DOWN]:
