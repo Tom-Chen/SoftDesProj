@@ -25,12 +25,16 @@ class Projectile(pygame.sprite.Sprite):
 		self.queueSplit = False
 		self.projectiles = []
 		self.splitMain = False
+		self.drop = False
+		self.queueDrop = False
 		if mode == 4:
 			self.hitScanEnable()
 		if mode == 2:
 			self.setTarget(target[0],target[1])
 		if mode == 3:
 			self.queueSplit = True
+		if mode == 5:
+			self.queueDrop = True
 			
 	def domove(self):
 		if self.doTrack and checkTime(self.timezero):
@@ -50,6 +54,13 @@ class Projectile(pygame.sprite.Sprite):
 			if self.queueSplit:
 				if checkTime(self.timezero):
 					self.splitMain = True
+			if self.queueDrop:
+				if checkTime(self.timezero):
+					self.drop = True
+					self.damage *=2
+					self.queueDrop = False
+			if self.drop:
+				self.dx = 0
 		
 		self.rect.move_ip(self.dx, self.dy)
 		self.rect.move(self.dx, self.dy)

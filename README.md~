@@ -1,22 +1,15 @@
 SoftDesProj
 ===========
+2D Artillery Game
 
-2d artillery game
+Our code is split into four files:
+main.py - The core of the game engine. Iterates at the specified update rate, controlling movement, player input, and frame updating.
+tank.py - Houses the tank object. Handles the movement of the tank's rectangle and changing the tank image. Sends the updated coordinates and parameters back to main to be updated.
+projectile.py - Houses the projectile object. Controls the projectile's velocity as a function of time and sends updated coordinates to main to be updated.
+terrain.py - Houses the terrain object. Allows the terrain's position to be adjusted on game initialization.
 
-To Do:
+The img folder contains all the necessary images.
 
-Player information display
+The file instructions.pdf gives a tutorial on how to play the game, along with all of the game's controls and weapon types.
 
-Fix collision detection
 
-Add ground
-
-Add damage
-
-Polish gravity/physics equations
-
-Make shot originate from barrel
-
-More weapons
-
-AI Player

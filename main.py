@@ -99,7 +99,7 @@ class TankMain():
 								self.side = 0
 								if(self.redtank.ai):
 									if self.redtank.moveBack:
-										while(self.redtank.rect.center[0]<redtankpos[0] + 100):
+										while(self.redtank.rect.center[0]<redtankpos[0] + 100 and self.redtank.rect.centerx < 1203):
 											self.redtank.adjust(K_RIGHT)
 										self.redtank.moveBack = False
 									bluetankpos = self.bluetank.rect.center
@@ -163,6 +163,14 @@ class TankMain():
 							if self.side == 0:
 								self.bluetank.fireMode = 3
 								self.bluetank.weapon = "Split"
+							print("Fire mode: Split")
+						if(event.key == K_5):
+							if self.side == 1:
+								self.redtank.fireMode = 5
+								self.redtank.weapon = "Drop"
+							if self.side == 0:
+								self.bluetank.fireMode = 5
+								self.bluetank.weapon = "Drop"
 							print("Fire mode: Split")
 						if(event.key == K_1):
 							if self.side == 1:
@@ -250,7 +258,7 @@ class TankMain():
 								newprojectiles.append(params)
 							self.reloadProjectiles(newprojectiles)
 							for projectile in self.projectile:
-								projectile.damage /=4
+								projectile.damage /=3
 				for sprites in self.projectile_sprites:
 					sprites.draw(self.screen)
 				pygame.display.flip()
