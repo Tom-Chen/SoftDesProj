@@ -12,6 +12,7 @@ terrain.py - Houses the terrain object. Allows the terrain's position to be adju
 
 text.py - Used for text that needs to be updated. Defines text as sprites that can easily be redrawn. Used in main for changing values in the player information displays.
 
+
 The img folder contains all the necessary images for the game.
 
 The file instructions.pdf gives a tutorial on the game's controls and weapon types. The instructions also contain a screenshot of the game.
