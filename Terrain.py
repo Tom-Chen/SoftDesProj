@@ -1,9 +1,6 @@
-import os
-import sys
 import pygame
 import main
 from pygame.locals import *
-import math
 
 class Terrain(pygame.sprite.Sprite):
 	def __init__(self,x,y,imgName):

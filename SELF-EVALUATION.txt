@@ -1,0 +1,10 @@
+Overall, we are happy with making a functional and bug-free project.
+Our favorite feature of the game is the projectile physics, particularly for the tracking shots.
+
+Overall, we were happy with how we organized our code in different files.
+However, as the project advanced, our main file became very unwieldy.
+We would like to split the code in the main loop into different methods to be more readable.
+
+If we were to add new features, we would add sound and additional graphics such as explosions and different projectiles.
+Stretch features would be adding networked multiplayer and truly deformable terrain.
+

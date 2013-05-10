@@ -1,0 +1,6 @@
+Installing:
+
+Our game requires the following modules: sys, pygame, and math.
+Because it requires pygame, our game is only compatible with Python 2.
+
+Run the game with "python main.py" from the command line.

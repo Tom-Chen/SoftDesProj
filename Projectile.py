@@ -1,5 +1,3 @@
-import os
-import sys
 import pygame
 import main
 from pygame.locals import *

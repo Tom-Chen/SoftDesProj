@@ -1,4 +1,3 @@
-import os
 import sys
 import pygame
 from pygame.locals import *
@@ -9,7 +8,6 @@ import Terrain
 import math
 
 if not pygame.font: print 'Warning, fonts disabled'
-if not pygame.mixer: print 'Warning, sound disabled'
 
 global RED
 RED = (255,0,0)
@@ -57,14 +55,14 @@ class TankMain():
 			self.font = pygame.font.Font(None, 25)
 
 		#Load stuff
-		self.LoadTerrain()
+		self.loadTerrain()
 		self.loadSprites()
 		self.initText()
 
 	def MainLoop(self):
 	#Primary loop/event queue
 		current = pygame.time.get_ticks()
-		firetime = -3200
+		firetime = -3200 #Firetime is updated whenever tank shoots. Prevents tanks from moving for 3200ms after shot
 		while 1:
 			#FPS and gamespeed limiter
 			if(pygame.time.get_ticks()-current>(1000/FPS)):
@@ -79,7 +77,7 @@ class TankMain():
 					#Quit
 					if event.type == pygame.QUIT: 
 						sys.exit()
-					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3200):
+					elif event.type == KEYDOWN and (pygame.time.get_ticks() - firetime > 3200): 
 						#Controls movement and power/angle adjustment
 						if((event.key == K_RIGHT) or (event.key == K_LEFT) or (event.key == K_UP) or (event.key == K_DOWN)or (event.key == K_p)):
 							if (self.side == 0) and self.bluetank.rect.centerx < 481 and self.bluetank.rect.centerx > 53:
@@ -114,13 +112,14 @@ class TankMain():
 										self.redtank.adjust(K_p)
 								self.reloadProjectiles([[redtankpos[0], redtankpos[1],self.redtank.angle,round(self.redtank.power/5),pygame.time.get_ticks(), 'red',self.redtank.fireMode,(bluetankpos[0], bluetankpos[1])]])
 
-						#DEBUG ONLY - shows tank hitbox
+						#DEBUG ONLY - shows hitboxes for tanks and terrain
 						if(event.key == K_CAPSLOCK):
 							pygame.draw.rect(self.skyground, (0,0,255),self.bluetank.rect)
 							pygame.draw.rect(self.skyground, (255,0,0),self.redtank.rect)
 							for terrain in self.terrain:
 								pygame.draw.rect(self.skyground, (0,0,255),terrain.rect)
 
+						#Toggles red player AI on and off
 						if(event.key == K_TAB):
 							if(self.redtank.ai == True):
 								self.redtank.ai = False
@@ -140,6 +139,8 @@ class TankMain():
 									# projectile.setTarget(self.redtank.rect.center[0], self.redtank.rect.center[1])
 									# projectile.doTrack = True
 									# projectile.damage /=2
+
+						#Switches between weapons for selected player
 						if(event.key == K_2):
 							if self.side == 1:
 								self.redtank.fireMode = 2
@@ -193,7 +194,7 @@ class TankMain():
 							# for projectile in self.projectile:
 								# projectile.hitScanEnable()
 								
-				#Smooth movement, power, and angle handling
+				#Smooth (continuous) movement, power, and angle handling
 				keys = pygame.key.get_pressed()
 				if(pygame.time.get_ticks() - firetime > 3200):
 					if keys[K_p]:
@@ -248,6 +249,8 @@ class TankMain():
 					sprite.draw(self.screen)
 				self.redtank_sprite.draw(self.screen)
 				self.bluetank_sprite.draw(self.screen)
+
+				#Projectile splitting (if enabled)
 				for projectile in self.projectile:
 					projectile.domove()
 					if projectile.splitMain:
@@ -259,12 +262,13 @@ class TankMain():
 							self.reloadProjectiles(newprojectiles)
 							for projectile in self.projectile:
 								projectile.damage /=3
+
 				for sprites in self.projectile_sprites:
 					sprites.draw(self.screen)
-				pygame.display.flip()
-				current = pygame.time.get_ticks()
+				pygame.display.flip() #Actually updates display
+				current = pygame.time.get_ticks() #Keeps track of last time frame was drawn
 				
-				#WIP Collision Detection
+				#WIP (not really WIP at this point) Collision Detection
 				for projectile in self.projectile:
 					if projectile.rect.colliderect(self.bluetank.rect) and projectile.color == 'red':
 						self.bluetank.health -= projectile.damage
@@ -291,7 +295,7 @@ class TankMain():
 						self.redtank.moveBack = True
 					if self.bluetank.adjustshot > 2:
 						self.bluetank.adjusthsot = 0
-						#move back
+						#move back (AI functionality)
 
 	def loadSprites(self):
 		#Tanks
@@ -323,7 +327,7 @@ class TankMain():
 		for projectile in self.projectile:
 			self.projectile_sprites.append(pygame.sprite.RenderPlain(projectile))
 
-	def LoadTerrain(self):
+	def loadTerrain(self):
 		self.terrain = [Terrain.Terrain(640,656,'ground'), Terrain.Terrain(640,418,'mount4')]
 		self.terrain_sprites = []
 		for terrain in self.terrain:
@@ -344,7 +348,8 @@ class TankMain():
 			self.projectile_sprites.append(pygame.sprite.RenderPlain((projectile)))
 		for sprites in self.projectile_sprites:
 			sprites.clear(self.screen,self.skyground)
-			
+
+	#AI functionality to calculate shot parameters
 	def getShot(self,xpos,xenemy,xadjust):
 		angle = 30 + xadjust*15
 		
@@ -358,6 +363,8 @@ class TankMain():
 			v=MAXSPEED
 		return (angle,v)
 
+
+	#Renders static text (as font object)
 	def initText(self):	
 		blupow = self.font.render("Power:", 1, BLUE)
 		self.screen.blit(blupow, blupow.get_rect(left=(20),top=(680)))
