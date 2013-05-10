@@ -6,6 +6,8 @@ The game is rendered on a Pygame "surface".
 Generally, tanks and terrain and such are drawn ("flipped" or "blitted") on top of the primary surface.
 Animation involves filling the old position of an object with background, then redrawing the object.
 This is done once per frame. To save on performance, only projectiles, tanks, and changing text are actually animated.
+In order to animate the tank's barrel, an entirely different tank sprite is used for each angle range.
+There are tank sprites with barrels in 15 degree increments.
 
 Terrain and static (label) text are loaded and rendered ONCE via the initText and loadTerrain functions.
 The visuals for objects that need to be updated are defined as pygame "sprites," which have built-in clearing and rendering functions.
