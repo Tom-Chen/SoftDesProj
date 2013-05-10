@@ -1,0 +1,33 @@
+Our game is completely based on pygame.
+
+Our game runs and updates at a variable-defined speed (framerate). Currently, this is 60 frames per second.
+
+The game is rendered on a Pygame "surface".
+Generally, tanks and terrain and such are drawn ("flipped" or "blitted") on top of the primary surface.
+Animation involves filling the old position of an object with background, then redrawing the object.
+This is done once per frame. To save on performance, only projectiles, tanks, and changing text are actually animated.
+
+Terrain and static (label) text are loaded and rendered ONCE via the initText and loadTerrain functions.
+The visuals for objects that need to be updated are defined as pygame "sprites," which have built-in clearing and rendering functions.
+These objects and their associated sprites are initiated in the loadSprites function.
+
+Much of the game functionality is defined in the main loop in the main.py file.
+This loop runs at the game speed defined above. 
+The loop checks for a victory and handles keyboard events, projectile movement, and updating/redrawing the screen.
+The loop looks for certain key presses and then runs a different function for each (adjusting angle, changing weapons, etc.).
+
+When the space bar is pressed, the tank "fires."
+This creates a new projectiles object that follows a path based on the tank's specified angle and power.
+The projectile follows the path until the loop detects that it collides with a tank or terrain. The projectile is then killed.
+Projectile path behavior can differ depending on the selected weapon:
+    "Normal" follows regular projectile motion.
+    "Tracking" gets the angle between the projectile and the target tank and adjusts accordingly after 1 second.
+    "Split" splits the projectile into 4 projectiles in a pre-defined spray after 1 second.
+    "Hitscan" travels in a straight line (not very practical).
+    "Drop" falls straight down after 1 second.
+
+The other files:
+tank.py - Houses the tank object. Handles the movement of the tank's rectangle and changing the tank image. Sends the updated coordinates and parameters back to main to be updated.
+projectile.py - Houses the projectile object. Controls the projectile's velocity as a function of time and sends updated coordinates to main to be updated.
+terrain.py - Houses the terrain object. Allows the terrain's position to be adjusted on game initialization.
+text.py - Used for text that needs to be updated. Defines text as sprites that can easily be redrawn. Used in main for changing values in the player information displays.
